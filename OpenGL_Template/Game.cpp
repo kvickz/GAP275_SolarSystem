@@ -4,11 +4,16 @@
 #include "Renderer.h"
 #include "FileLoader.h"
 
+#include "GameObject.h"
+#include "GameObjectFactory.h"
+
 #include <math.h>
 
 Game::Game()
     :m_running(true)
     , m_pRenderer(nullptr)
+    , m_deltaTime(0)
+    , m_elapsed(0)
 {
     //
 }
@@ -19,6 +24,9 @@ Game::~Game()
     m_pRenderer = nullptr;
 }
 
+//-------------------------------------------------------------------------------------- -
+//  Main Game Initialization Function
+//-------------------------------------------------------------------------------------- -
 void Game::Init()
 {
     m_pRenderer = new Renderer();
@@ -30,13 +38,35 @@ void Game::Init()
     CreateShaders();
     CreateProgram();
     CollectShaderVariables();
+
+    CreateGameObjects();
 }
 
 //-------------------------------------------------------------------------------------- -
-//  Main Application Update Function
+//  Create Game Objects Function
+//      -This is an initialization-phase function that will create
+//       all of the initial objects for the game.
+//-------------------------------------------------------------------------------------- -
+void Game::CreateGameObjects()
+{
+    GameObjectFactory factory;
+
+    m_gameObjects.push_back(factory.CreatePlanet());
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Main Game Update Function
 //-------------------------------------------------------------------------------------- -
 int Game::Update()
 {
+    //Calculating time delta
+    m_deltaTime = SDL_GetTicks() - m_elapsed;
+    m_elapsed = SDL_GetTicks();
+
+    //Updating objs
+    UpdateGameObjects();
+
+    //TODO: needs to be refactored into renderer/input manager
     if (m_pRenderer->HandleEvents() == 0)  //HANDLING WINDOW EVENTS
         return 0;
 
@@ -44,21 +74,93 @@ int Game::Update()
 
     m_pRenderer->SwapWindow();
 
+    //Remove Queued objects
+    DeleteQueuedObjects();
+
     return 1;   //SUCCESS
 }
 
 //-------------------------------------------------------------------------------------- -
-//  Main Application Shutdown Function
+//  Update Game Objects Function
+//      -Iterates through all gameObjects calling Update() within each.
+//      -Also checks for objects that need to be removed
+//-------------------------------------------------------------------------------------- -
+void Game::UpdateGameObjects()
+{
+    auto iterator = m_gameObjects.begin();
+
+    while (iterator != m_gameObjects.end())
+    {
+        (*iterator)->Update();
+
+        //Places object into deletion queue
+        if ((*iterator)->IsReadyToDelete())
+        {
+            m_gameObjectsToDelete.push((*iterator));
+
+            auto tempIterator = iterator;
+            ++iterator;
+
+            //TODO: This might not work as expected, if it calls delete on the pointer
+            m_gameObjects.erase(tempIterator);
+
+            return; //TODO: This might be a bad idea?
+        }
+
+        ++iterator;
+    }
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Remove Game Object Function
+//      -Takes a pointer to a game object as a parameter and marks it for deletion.
+//       does not actually delete the object. 
+//      -Deletion of objects is handled by Game::DeleteQueuedObjects()
+//-------------------------------------------------------------------------------------- -
+void Game::RemoveGameObject(GameObject* pGameObject)
+{
+    pGameObject->DeleteObject();
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Delete Queued Game Objects Function
+//      -Will destroy any objects inside m_gameObjectsToDelete for good.
+//-------------------------------------------------------------------------------------- -
+void Game::DeleteQueuedObjects()
+{
+    while (!m_gameObjectsToDelete.empty())
+    {
+        //TODO: safe delete macro
+        delete m_gameObjectsToDelete.front();
+        m_gameObjectsToDelete.front() = nullptr;
+
+        m_gameObjectsToDelete.pop();
+    }
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Main Game Shutdown Function
 //-------------------------------------------------------------------------------------- -
 void Game::Shutdown()
 {
     m_pRenderer->Shutdown();
 }
 
-//TODO: Remove
-void Game::SwapWindow()
+//-------------------------------------------------------------------------------------- -
+//  Delete All Objects Function
+//      -Only meant to be called by shutdown, does as the name says
+//-------------------------------------------------------------------------------------- -
+void Game::DeleteAllObjects()
 {
-    m_pRenderer->SwapWindow();
+    auto iterator = m_gameObjects.begin();
+
+    while (iterator != m_gameObjects.end())
+    {
+        delete (*iterator);
+        (*iterator) = nullptr;
+
+        ++iterator;
+    }
 }
 
 //TODO: Refactor into gameobjects
@@ -115,7 +217,6 @@ void Game::CreateShaders()
 
     char buffer[512] = { 0 };
     glGetShaderInfoLog(m_vertexShader, 512, NULL, buffer);
-
 }
 
 //-------------------------------------------------------------------------------------- -

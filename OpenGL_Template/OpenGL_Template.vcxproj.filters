@@ -13,6 +13,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -24,8 +27,20 @@
     <ClInclude Include="FileLoader.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="GameObjectComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Core</Filter>
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectFactory.h">
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +57,15 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{56875c97-73b7-4beb-8b1b-5c995b344d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{f12afab2-adb5-43b2-8fcd-26e8cd087f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{6a9bded0-e138-44d4-982a-c5163286baaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Components">
+      <UniqueIdentifier>{0b390fb2-e2fa-461f-a12a-abbbb035784e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

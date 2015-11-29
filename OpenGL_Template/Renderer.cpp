@@ -42,6 +42,16 @@ void Renderer::Init()
 }
 
 //-------------------------------------------------------------------------------------- -
+//  Renderer Update Function
+//      -functions as a basic loop to encapsulate drawing behaviors
+//-------------------------------------------------------------------------------------- -
+void Renderer::Update()
+{
+
+    HandleEvents();
+}
+
+//-------------------------------------------------------------------------------------- -
 //  Handle Events Function
 //      -Encapsulates the handling of events
 //      -Returns 0 or FALSE for quitting
@@ -115,11 +125,6 @@ int Renderer::HandleEvents()
     }
 
     return 1;   //SUCCESS
-}
-
-void Renderer::Update()
-{
-    HandleEvents();
 }
 
 void Renderer::Shutdown()

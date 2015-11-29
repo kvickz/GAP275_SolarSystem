@@ -4,6 +4,7 @@
 #define GAME_H
 
 #include <vector>
+#include <queue>
 
 #include <cml/cml.h>
 
@@ -48,9 +49,12 @@ private:
 
     //----------------------------------
     //Class Vars
+    unsigned int m_deltaTime;
+    unsigned int m_elapsed;
     bool m_running;
 
     std::vector<GameObject*> m_gameObjects;
+    std::queue<GameObject*> m_gameObjectsToDelete;
 
     Renderer* m_pRenderer;
     //----------------------------------
@@ -63,9 +67,7 @@ public:
     int Update();
     void Shutdown();
 
-    //Refactor to renderer
-    void SwapWindow();
-
+private:
     //TODO: Super refactor!
     GLuint GetVAO() { return m_vertexArrayObject; }
     std::vector<float> GetVerts() { return m_verts; }
@@ -87,6 +89,14 @@ public:
     void CreateShaders();
     void CreateProgram();
     void CollectShaderVariables();
+
+    void CreateGameObjects();
+    void UpdateGameObjects();
+    void RemoveGameObject(GameObject* pGameObject);
+    void DeleteQueuedObjects();
+
+    //This is a shutdown function
+    void DeleteAllObjects();
 
     void Draw();
 };

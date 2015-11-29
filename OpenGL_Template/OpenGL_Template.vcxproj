@@ -92,14 +92,19 @@
   <ItemGroup>
     <ClCompile Include="FileLoader.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileLoader.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObjectFactory.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectComponent.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShader.glsl" />
