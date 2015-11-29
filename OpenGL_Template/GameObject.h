@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 class GameObjectComponent;
+class TransformComponent;
 
 typedef unsigned int ComponentID;
 typedef unsigned int ObjectInstanceID;
@@ -35,7 +36,13 @@ public:
     void DeleteObject();
     bool IsReadyToDelete() { return m_deleteMe; }
 
+    void AddComponent(ComponentID key, GameObjectComponent* pNewComponent);
+    void RemoveComponent(ComponentID key);
+
+    TransformComponent* GetTransformComponent();
+
 private:
+    void DestroyObject();
     void UpdateComponents();
     void MarkForRemoval() { m_deleteMe = true; }
 };

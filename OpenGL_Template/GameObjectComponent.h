@@ -18,7 +18,7 @@ protected:
 
 public:
     GameObjectComponent(ComponentID id);
-    virtual ~GameObjectComponent();
+    virtual ~GameObjectComponent() {};
 
     virtual void Init() {};
     virtual void Update() {};
@@ -28,3 +28,4 @@ public:
 };
 
 #endif // !GAMEOBJECTCOMPONENT_H
+

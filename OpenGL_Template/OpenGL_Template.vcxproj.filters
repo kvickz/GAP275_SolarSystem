@@ -16,6 +16,24 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="GameObjectFactory.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectComponentFactory.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -41,6 +59,12 @@
     </ClInclude>
     <ClInclude Include="GameObjectFactory.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectComponentFactory.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderComponent.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

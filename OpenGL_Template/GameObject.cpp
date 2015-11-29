@@ -14,7 +14,29 @@ GameObject::GameObject(ObjectID id)
 
 GameObject::~GameObject()
 {
-    //
+    DestroyObject();
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Destroy Object Function
+//      -Actually removes the object.
+//      -Calls delete on all components within the object
+//-------------------------------------------------------------------------------------- -
+void GameObject::DestroyObject()
+{
+    //Cleanup all components
+    auto iterator = m_components.begin();
+
+    while (iterator != m_components.end())
+    {
+        delete iterator->second;
+        iterator->second = nullptr;
+
+        auto tempIterator = iterator;
+        ++iterator;
+
+        m_components.erase(tempIterator);
+    }
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -40,6 +62,28 @@ void GameObject::UpdateComponents()
         iterator->second->Update();
         ++iterator;
     }
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Add Component Function
+//      -Adds a component to game object given a pointer to the component.
+//      -Only meant to be called by the factory that creates this object.
+//-------------------------------------------------------------------------------------- -
+void GameObject::AddComponent(ComponentID key, GameObjectComponent* pNewComponent)
+{
+    m_components.emplace(key, pNewComponent);
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Remove Component Function
+//      -Removes component
+//      -Not tested but might have issues with duplicate components.
+//      -TODO: Test for duplicate functionality errors
+//-------------------------------------------------------------------------------------- -
+void GameObject::RemoveComponent(ComponentID key)
+{
+    //TODO: Mark for deletion? probably needs to happen
+    m_components.erase(key);
 }
 
 //-------------------------------------------------------------------------------------- -

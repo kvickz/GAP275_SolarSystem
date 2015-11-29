@@ -13,8 +13,10 @@ private:
     Vector3 m_position;
 
 public:
-    TransformComponent();
+    TransformComponent(ComponentID id);
     ~TransformComponent();
+
+    virtual void Update() override;
 };
 
 #endif // !TRANSFORMCOMPONENT_H

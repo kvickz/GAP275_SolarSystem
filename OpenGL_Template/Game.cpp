@@ -144,6 +144,7 @@ void Game::DeleteQueuedObjects()
 void Game::Shutdown()
 {
     m_pRenderer->Shutdown();
+    DeleteAllObjects();
 }
 
 //-------------------------------------------------------------------------------------- -
