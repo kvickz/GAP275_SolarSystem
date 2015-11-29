@@ -17,8 +17,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Libraries
-* 'OpenGL_Template\SDL2\'
+# TempFile
+*.opensdf
 
 # =========================
 # Operating System Files
