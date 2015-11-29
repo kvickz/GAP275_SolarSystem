@@ -6,6 +6,7 @@
 typedef unsigned int ComponentID;
 
 class GameObject;
+class TransformComponent;
 
 class GameObjectComponent
 {
@@ -15,6 +16,7 @@ private:
 
 protected:
     GameObject* m_pGameObject;
+    TransformComponent* m_pTransform;
 
 public:
     GameObjectComponent(ComponentID id);
@@ -23,6 +25,8 @@ public:
     virtual void Init() {};
     virtual void Update() {};
     virtual void Destroy() {};
+
+    TransformComponent* GetTransform() { return m_pTransform; }
 
     ComponentID GetComponentID() { return m_componentID; }
 };

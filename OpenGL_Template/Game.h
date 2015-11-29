@@ -14,7 +14,6 @@ class GameObject;
 typedef unsigned int GLuint;
 typedef int GLint;
 
-//TODO: Remove
 class RenderComponent;
 
 class Game
@@ -22,16 +21,10 @@ class Game
 private:
     //TODO: Clean dis shit up
     //----------------------------------
-    // SHADERS
-    GLuint m_shaderProgram;
-
-    //----------------------------------
     // SHADER VARIABLES :: MAJOR REFACTORING NEEDS TO BE DONE WITH THESE
-    GLint m_transformMatrixUniform;
     GLint m_viewMatrixUniform;
     GLint m_projectionMatrixUniform;
 
-    cml::matrix44f_c m_transformMatrix;
     cml::matrix44f_c m_viewMatrix;
     cml::matrix44f_c m_projectionMatrix;
 
@@ -59,19 +52,12 @@ public:
 
 private:
     //TODO: Super refactor!
-    GLuint GetShaderProgram() { return m_shaderProgram; }
-    GLint GetTransformMatrixUniform() { return m_transformMatrixUniform; }
     GLint GetViewMatrixUniform() { return m_viewMatrixUniform; }
     GLint GetProjectionMatrixUniform() { return m_projectionMatrixUniform; }
-    cml::matrix44f_c GetTransformMatrix() { return m_transformMatrix; }
     cml::matrix44f_c GetViewMatrix() { return m_viewMatrix; }
     cml::matrix44f_c GetProjectionMatrix() { return m_projectionMatrix; }
     cml::vector3f GetCameraPosition() { return m_cameraPosition; }
 
-    void SetTransformMatrix(cml::matrix44f_c val) { m_transformMatrix = val; }
-
-    void CreateShaders();
-    void CreateProgram();
     void CollectShaderVariables();
 
     void CreateGameObjects();
@@ -83,6 +69,7 @@ private:
     void DeleteAllObjects();
 
     void Draw();
+    void DrawObject(RenderComponent* pRenderer);
 };
 
 #endif // !GAME_H

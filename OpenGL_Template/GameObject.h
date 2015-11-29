@@ -32,6 +32,7 @@ public:
     GameObject(ObjectID id);
     ~GameObject();
 
+    void Init();
     void Update();
     void DeleteObject();
     bool IsReadyToDelete() { return m_deleteMe; }

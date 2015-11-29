@@ -37,11 +37,6 @@ void Game::Init()
 
     CreateGameObjects();
 
-    // Object Initialization
-    //TODO: Remove, this is just for testing
-    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMeshFromFile("Sphere.obj");
-    CreateShaders();
-    CreateProgram();
     CollectShaderVariables();
 }
 
@@ -50,14 +45,28 @@ void Game::Init()
 //      -This is an initialization-phase function that will create
 //       all of the initial objects for the game.
 //-------------------------------------------------------------------------------------- -
+#include "Enums.h"
+#include "Material.h"
+
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory;
 
     m_gameObjects.push_back(factory.CreatePlanet());
-}
 
-#include "RenderComponent.h"
+    // Object Initialization
+    //TODO: Remove, this is just for testing
+    m_gameObjects[0]->Init();
+    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMeshFromFile("Sphere.obj");
+    
+    //Assigning material
+    Material* pMaterial = new Material();
+    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
+    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+
+    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMaterial(pMaterial);
+    m_gameObjects[0]->GetComponent<RenderComponent>(2)->CreateProgram();
+}
 
 //-------------------------------------------------------------------------------------- -
 //  Main Game Update Function
@@ -170,56 +179,17 @@ void Game::DeleteAllObjects()
 }
 
 //-------------------------------------------------------------------------------------- -
-//  Create Shaders Function 
-//      -Will create and compile vertex and fragment shader
-//-------------------------------------------------------------------------------------- -
-
-#include "Enums.h"
-#include "Material.h"
-
-void Game::CreateShaders()
-{
-    Material* pMaterial = new Material();
-    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
-    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
-
-    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMaterial(pMaterial);
-}
-
-//-------------------------------------------------------------------------------------- -
-//  Create Program Function
-//      -Will create a program and link shaders to it
-//-------------------------------------------------------------------------------------- -
-void Game::CreateProgram()
-{
-    Material* pMaterial = m_gameObjects[0]->GetComponent<RenderComponent>(2)->GetMaterial();
-
-    m_shaderProgram = glCreateProgram();
-    glAttachShader(m_shaderProgram, pMaterial->GetShaderGLPointer(ShaderType::k_vertex));
-    glAttachShader(m_shaderProgram, pMaterial->GetShaderGLPointer(ShaderType::k_fragment));
-    glLinkProgram(m_shaderProgram);
-    glBindFragDataLocation(m_shaderProgram, 0, "outColor");
-    glUseProgram(m_shaderProgram);
-
-    //Will set attributes for the currently bound VBO
-    GLint posAttrib = glGetAttribLocation(m_shaderProgram, "position");
-    //posAttrib = 0;
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(posAttrib);
-}
-
-//-------------------------------------------------------------------------------------- -
 //  Collect Shader Variables Function
 //      -Gets the location of the uniforms for modulation in update
 //-------------------------------------------------------------------------------------- -
 void Game::CollectShaderVariables()
 {
-    m_transformMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformMatrix");
-    m_viewMatrixUniform = glGetUniformLocation(m_shaderProgram, "viewMatrix");
-    m_projectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "projectionMatrix");
+    GLuint shaderProg = m_gameObjects[0]->GetComponent<RenderComponent>(2)->GetShaderProgram();
+
+    m_viewMatrixUniform = glGetUniformLocation(shaderProg, "viewMatrix");
+    m_projectionMatrixUniform = glGetUniformLocation(shaderProg, "projectionMatrix");
 
     //Initializing matrices to 1
-    m_transformMatrix.identity();
     m_viewMatrix.identity();
     m_projectionMatrix.identity();
 
@@ -242,21 +212,11 @@ float camZ = 0.f;
 //-------------------------------------------------------------------------------------- -
 void Game::Draw()
 {
-    
-    float sinVal = sinf(SDL_GetTicks() * 0.001f);
-
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //Rotation and translation of the object
-    cml::matrix44f_c objectRotation;
-    cml::matrix44f_c objectTranslation;
-
-    objectRotation.identity();
-    cml::matrix_rotate_about_local_y(objectRotation, (SDL_GetTicks() * 0.001f));
-    cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
-
-    m_transformMatrix = (objectTranslation * objectRotation);
+    //BINDING BUFFERS
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Set camera position and target
     cml::vector4f cameraForward(0.f, 0.f, -1.f, 0.f);
@@ -268,19 +228,20 @@ void Game::Draw()
                            , cameraPosition + cameraDirection   //Direction
                            , cml::vector3f(0.f, 1.f, 0.f));     //Up-Direction, Y is up
 
-    //BINDING BUFFERS
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glUseProgram(m_shaderProgram);
-
-    //glBindVertexArray(m_vertexArrayObject);
+    //Render objects
     RenderComponent* pRenderComponent = m_gameObjects[0]->GetComponent<RenderComponent>(2);
-    glBindVertexArray(pRenderComponent->GetVAO());
+    DrawObject(pRenderComponent);
+}
 
-    glProgramUniformMatrix4fv(m_shaderProgram, m_transformMatrixUniform, 1, GL_FALSE, m_transformMatrix.data());
-    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, m_viewMatrix.data());
-    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, m_projectionMatrix.data());
+void Game::DrawObject(RenderComponent* pRenderer)
+{
+    GLuint shaderProg = pRenderer->GetShaderProgram();
+    glUseProgram(shaderProg);
+    glBindVertexArray(pRenderer->GetVAO());
 
-    //glDrawElements(GL_TRIANGLES, m_vertIndices.size(), GL_UNSIGNED_INT, &m_vertIndices[0]);
-    glDrawElements(GL_TRIANGLES, pRenderComponent->GetIndices().size(), GL_UNSIGNED_INT, &pRenderComponent->GetIndices()[0]);
-    
+    glProgramUniformMatrix4fv(shaderProg, pRenderer->GetTransformMatrixUniform(), 1, GL_FALSE, pRenderer->GetTransformMatrix().data());
+    glProgramUniformMatrix4fv(shaderProg, m_viewMatrixUniform, 1, GL_FALSE, m_viewMatrix.data());
+    glProgramUniformMatrix4fv(shaderProg, m_projectionMatrixUniform, 1, GL_FALSE, m_projectionMatrix.data());
+
+    glDrawElements(GL_TRIANGLES, pRenderer->GetIndices().size(), GL_UNSIGNED_INT, &pRenderer->GetIndices()[0]);
 }

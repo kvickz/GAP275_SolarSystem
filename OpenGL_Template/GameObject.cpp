@@ -18,6 +18,18 @@ GameObject::~GameObject()
     DestroyObject();
 }
 
+void GameObject::Init()
+{
+    //Initialize all components
+    auto iterator = m_components.begin();
+
+    while (iterator != m_components.end())
+    {
+        iterator->second->Init();
+        ++iterator;
+    }
+}
+
 //-------------------------------------------------------------------------------------- -
 //  Destroy Object Function
 //      -Actually removes the object.
