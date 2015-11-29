@@ -7,6 +7,7 @@ unsigned int GameObject::s_objectInstanceCounter = 0;
 
 GameObject::GameObject(ObjectID id)
     :k_objectID(id)
+    , m_deleteMe(false)
 {
     m_objectInstanceID = s_objectInstanceCounter;
     ++s_objectInstanceCounter;

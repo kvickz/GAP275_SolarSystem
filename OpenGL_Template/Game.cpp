@@ -24,6 +24,8 @@ Game::~Game()
     m_pRenderer = nullptr;
 }
 
+#include "RenderComponent.h"
+
 //-------------------------------------------------------------------------------------- -
 //  Main Game Initialization Function
 //-------------------------------------------------------------------------------------- -
@@ -33,13 +35,14 @@ void Game::Init()
 
     m_pRenderer->Init();
 
+    CreateGameObjects();
+
     // Object Initialization
-    CreateObject("Sphere.obj");
+    //TODO: Remove, this is just for testing
+    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMeshFromFile("Sphere.obj");
     CreateShaders();
     CreateProgram();
     CollectShaderVariables();
-
-    CreateGameObjects();
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -53,6 +56,8 @@ void Game::CreateGameObjects()
 
     m_gameObjects.push_back(factory.CreatePlanet());
 }
+
+#include "RenderComponent.h"
 
 //-------------------------------------------------------------------------------------- -
 //  Main Game Update Function
@@ -164,60 +169,21 @@ void Game::DeleteAllObjects()
     }
 }
 
-//TODO: Refactor into gameobjects
-//-------------------------------------------------------------------------------------- -
-//  Create Objects Function
-//-------------------------------------------------------------------------------------- -
-void Game::CreateObject(char* fileName)
-{
-    ObjFile cubeObj;
-    cubeObj.Load(fileName);
-
-    //Allocate memory
-    m_verts = cubeObj.GetVerticesAsFloats();
-    m_vertIndices = cubeObj.GetFacesAsIndices();
-
-    //VBO
-    glGenBuffers(1, &m_vertexBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, m_verts.size() * sizeof(float), &m_verts[0], GL_STATIC_DRAW);
-
-    //EBO
-    glGenBuffers(1, &m_elementBufferObject);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_vertIndices.size(), &m_vertIndices[0], GL_STATIC_DRAW);
-
-    //VAO
-    glGenVertexArrays(1, &m_vertexArrayObject);
-    glBindVertexArray(m_vertexArrayObject);
-}
-
 //-------------------------------------------------------------------------------------- -
 //  Create Shaders Function 
 //      -Will create and compile vertex and fragment shader
 //-------------------------------------------------------------------------------------- -
 
+#include "Enums.h"
+#include "Material.h"
+
 void Game::CreateShaders()
 {
-    GLint debugInt = 0; //1 == success
+    Material* pMaterial = new Material();
+    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
+    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
 
-    ShaderFile vertexSource, fragmentSource;
-    vertexSource.Load("VertexShader.glsl");
-    fragmentSource.Load("FragmentShader.glsl");
-
-    m_vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    m_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    const char* vSource = vertexSource.GetSource();
-    glShaderSource(m_vertexShader, 1, &vSource, nullptr);
-    glCompileShader(m_vertexShader);
-
-    const char* fSource = fragmentSource.GetSource();
-    glShaderSource(m_fragmentShader, 1, &fSource, nullptr);
-    glCompileShader(m_fragmentShader);
-
-    char buffer[512] = { 0 };
-    glGetShaderInfoLog(m_vertexShader, 512, NULL, buffer);
+    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMaterial(pMaterial);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -226,9 +192,11 @@ void Game::CreateShaders()
 //-------------------------------------------------------------------------------------- -
 void Game::CreateProgram()
 {
+    Material* pMaterial = m_gameObjects[0]->GetComponent<RenderComponent>(2)->GetMaterial();
+
     m_shaderProgram = glCreateProgram();
-    glAttachShader(m_shaderProgram, m_vertexShader);
-    glAttachShader(m_shaderProgram, m_fragmentShader);
+    glAttachShader(m_shaderProgram, pMaterial->GetShaderGLPointer(ShaderType::k_vertex));
+    glAttachShader(m_shaderProgram, pMaterial->GetShaderGLPointer(ShaderType::k_fragment));
     glLinkProgram(m_shaderProgram);
     glBindFragDataLocation(m_shaderProgram, 0, "outColor");
     glUseProgram(m_shaderProgram);
@@ -302,16 +270,17 @@ void Game::Draw()
 
     //BINDING BUFFERS
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //glUseProgram(g_shaderProgram);
     glUseProgram(m_shaderProgram);
-    //glBindBuffer(g_vertexBufferObject);
 
-    glBindVertexArray(m_vertexArrayObject);
+    //glBindVertexArray(m_vertexArrayObject);
+    RenderComponent* pRenderComponent = m_gameObjects[0]->GetComponent<RenderComponent>(2);
+    glBindVertexArray(pRenderComponent->GetVAO());
 
     glProgramUniformMatrix4fv(m_shaderProgram, m_transformMatrixUniform, 1, GL_FALSE, m_transformMatrix.data());
     glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, m_viewMatrix.data());
     glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, m_projectionMatrix.data());
 
-    glDrawElements(GL_TRIANGLES, m_vertIndices.size(), GL_UNSIGNED_INT, &m_vertIndices[0]);
+    //glDrawElements(GL_TRIANGLES, m_vertIndices.size(), GL_UNSIGNED_INT, &m_vertIndices[0]);
+    glDrawElements(GL_TRIANGLES, pRenderComponent->GetIndices().size(), GL_UNSIGNED_INT, &pRenderComponent->GetIndices()[0]);
     
 }

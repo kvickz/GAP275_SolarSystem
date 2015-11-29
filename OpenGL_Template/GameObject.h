@@ -39,6 +39,9 @@ public:
     void AddComponent(ComponentID key, GameObjectComponent* pNewComponent);
     void RemoveComponent(ComponentID key);
 
+    template<class ComponentType>
+    ComponentType* GetComponent(ComponentID id);
+
     TransformComponent* GetTransformComponent();
 
 private:
@@ -46,5 +49,16 @@ private:
     void UpdateComponents();
     void MarkForRemoval() { m_deleteMe = true; }
 };
+
+//[???] Is there any way to get this into the cpp file? or is it just how it is with templates
+//-------------------------------------------------------------------------------------- -
+//  Get Component Function
+//      -Generic templated function that returns a casted component.
+//-------------------------------------------------------------------------------------- -
+template<typename ComponentType>
+ComponentType* GameObject::GetComponent(ComponentID id)
+{
+    return static_cast<ComponentType*>(m_components[id]);
+}
 
 #endif // !GAMEOBJECT_H

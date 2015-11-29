@@ -13,7 +13,7 @@ GameObject* GameObjectFactory::CreatePlanet()
     pObject->AddComponent(k_transformComponentID, componentFactory.CreateTransformComponent());
 
     //Add Render Component
-    pObject->AddComponent(k_renderComponentID, componentFactory.CreateTransformComponent());
+    pObject->AddComponent(k_renderComponentID, componentFactory.CreateRenderComponent());
 
     return pObject;
 }

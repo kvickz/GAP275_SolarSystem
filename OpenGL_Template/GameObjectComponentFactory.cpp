@@ -12,6 +12,7 @@ TransformComponent* GameObjectComponentFactory::CreateTransformComponent()
 RenderComponent* GameObjectComponentFactory::CreateRenderComponent()
 {
     RenderComponent* pComponent = new RenderComponent(k_renderComponentID);
+    //pComponent->LoadMeshFromFile("Sphere.obj");
 
     return pComponent;
 }

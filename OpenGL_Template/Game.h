@@ -14,25 +14,15 @@ class GameObject;
 typedef unsigned int GLuint;
 typedef int GLint;
 
+//TODO: Remove
+class RenderComponent;
+
 class Game
 {
 private:
     //TODO: Clean dis shit up
     //----------------------------------
-    //GL Vars
-    //----------------------------------
-    //  BUFFER OBJECTS
-    GLuint m_vertexBufferObject = 0;
-    GLuint m_elementBufferObject = 0;
-    GLuint m_vertexArrayObject = 0;
-
-    std::vector<float> m_verts;
-    std::vector<unsigned int> m_vertIndices;
-
-    //----------------------------------
     // SHADERS
-    GLuint m_vertexShader;
-    GLuint m_fragmentShader;
     GLuint m_shaderProgram;
 
     //----------------------------------
@@ -69,11 +59,6 @@ public:
 
 private:
     //TODO: Super refactor!
-    GLuint GetVAO() { return m_vertexArrayObject; }
-    std::vector<float> GetVerts() { return m_verts; }
-    std::vector<unsigned int> GetIndices() { return m_vertIndices; }
-    GLuint GetVertexShader() { return m_vertexShader; }
-    GLuint GetFragmentShader() { return m_fragmentShader; }
     GLuint GetShaderProgram() { return m_shaderProgram; }
     GLint GetTransformMatrixUniform() { return m_transformMatrixUniform; }
     GLint GetViewMatrixUniform() { return m_viewMatrixUniform; }
@@ -85,7 +70,6 @@ private:
 
     void SetTransformMatrix(cml::matrix44f_c val) { m_transformMatrix = val; }
 
-    void CreateObject(char* fileName);
     void CreateShaders();
     void CreateProgram();
     void CollectShaderVariables();
