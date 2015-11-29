@@ -24,13 +24,32 @@ void Game::Init()
     m_pRenderer = new Renderer();
 
     m_pRenderer->Init();
+
+    // Object Initialization
+    CreateObject("Sphere.obj");
+    CreateShaders();
+    CreateProgram();
+    CollectShaderVariables();
 }
 
-void Game::Update()
+//-------------------------------------------------------------------------------------- -
+//  Main Application Update Function
+//-------------------------------------------------------------------------------------- -
+int Game::Update()
 {
-    m_pRenderer->Update();
+    if (m_pRenderer->HandleEvents() == 0)  //HANDLING WINDOW EVENTS
+        return 0;
+
+    Draw();
+
+    m_pRenderer->SwapWindow();
+
+    return 1;   //SUCCESS
 }
 
+//-------------------------------------------------------------------------------------- -
+//  Main Application Shutdown Function
+//-------------------------------------------------------------------------------------- -
 void Game::Shutdown()
 {
     m_pRenderer->Shutdown();
@@ -40,11 +59,6 @@ void Game::Shutdown()
 void Game::SwapWindow()
 {
     m_pRenderer->SwapWindow();
-}
-
-int Game::HandleEvents()
-{
-    return m_pRenderer->HandleEvents();
 }
 
 //TODO: Refactor into gameobjects
@@ -148,9 +162,17 @@ void Game::CollectShaderVariables()
     cml::matrix_perspective_xfov_RH(m_projectionMatrix, 90.f, 800.f / 600.f, 0.1f, 1000.f, cml::z_clip_neg_one);
 }
 
+const float k_camSpeed = 0.10f;
+float camX = 0.f;
+float camY = 0.f;
+float camZ = 0.f;
+
+//-------------------------------------------------------------------------------------- -
+//  Main Application Draw Function
+//-------------------------------------------------------------------------------------- -
 void Game::Draw()
 {
-    /*
+    
     float sinVal = sinf(SDL_GetTicks() * 0.001f);
 
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -164,15 +186,14 @@ void Game::Draw()
     cml::matrix_rotate_about_local_y(objectRotation, (SDL_GetTicks() * 0.001f));
     cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
 
-    //g_transformMatrix = objectTranslation * objectRotation;
-    g_game.SetTransformMatrix(objectTranslation * objectRotation);
+    m_transformMatrix = (objectTranslation * objectRotation);
 
     //Set camera position and target
     cml::vector4f cameraForward(0.f, 0.f, -1.f, 0.f);
     cml::vector3f cameraDirection = (cameraForward).subvector(3);
     cml::vector3f cameraPosition(camX, 0.f, camZ);
 
-    cml::matrix_look_at_RH(g_game.GetViewMatrix()
+    cml::matrix_look_at_RH(m_viewMatrix
                            , cameraPosition                     //Origin
                            , cameraPosition + cameraDirection   //Direction
                            , cml::vector3f(0.f, 1.f, 0.f));     //Up-Direction, Y is up
@@ -180,15 +201,15 @@ void Game::Draw()
     //BINDING BUFFERS
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glUseProgram(g_shaderProgram);
-    glUseProgram(g_game.GetShaderProgram());
+    glUseProgram(m_shaderProgram);
     //glBindBuffer(g_vertexBufferObject);
 
-    glBindVertexArray(g_game.GetVAO());
+    glBindVertexArray(m_vertexArrayObject);
 
-    glProgramUniformMatrix4fv(g_game.GetShaderProgram(), g_game.GetTransformMatrixUniform(), 1, GL_FALSE, g_game.GetTransformMatrix().data());
-    glProgramUniformMatrix4fv(g_game.GetShaderProgram(), g_game.GetViewMatrixUniform(), 1, GL_FALSE, g_game.GetViewMatrix().data());
-    glProgramUniformMatrix4fv(g_game.GetShaderProgram(), g_game.GetProjectionMatrixUniform(), 1, GL_FALSE, g_game.GetProjectionMatrix().data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_transformMatrixUniform, 1, GL_FALSE, m_transformMatrix.data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, m_viewMatrix.data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, m_projectionMatrix.data());
 
-    glDrawElements(GL_TRIANGLES, g_game.GetIndices().size(), GL_UNSIGNED_INT, &g_game.GetIndices()[0]);
-    */
+    glDrawElements(GL_TRIANGLES, m_vertIndices.size(), GL_UNSIGNED_INT, &m_vertIndices[0]);
+    
 }

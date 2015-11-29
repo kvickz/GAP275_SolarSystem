@@ -60,13 +60,11 @@ public:
     ~Game();
 
     void Init();
-    void Update();
+    int Update();
     void Shutdown();
 
     //Refactor to renderer
-    int HandleEvents();
     void SwapWindow();
-
 
     //TODO: Super refactor!
     GLuint GetVAO() { return m_vertexArrayObject; }
