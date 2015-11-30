@@ -16,8 +16,8 @@ class GameObjectComponentFactory
 {
 public:
     TransformComponent* CreateTransformComponent(GameObject* pGameObject);
-    RenderComponent* CreateRenderComponent(GameObject* pGameObject);
-    CameraComponent* CreateCameraComponent(GameObject* pGameObject);
+    RenderComponent* CreateRenderComponent(GameObject* pGameObject, TransformComponent* pTransform);
+    CameraComponent* CreateCameraComponent(GameObject* pGameObject, TransformComponent* pTransform);
 };
 
 #endif // !GAMEOBJECTCOMPONENTFACTORY_H

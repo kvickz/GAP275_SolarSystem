@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "Renderer.h"
+#include "InputManager.h"
 #include "FileLoader.h"
 
 #include "GameObject.h"
@@ -12,6 +13,8 @@
 Game::Game()
     :m_running(true)
     , m_pRenderer(nullptr)
+    , m_pInputManager(nullptr)
+    , m_pCamera(nullptr)
     , m_deltaTime(0)
     , m_elapsed(0)
 {
@@ -22,6 +25,11 @@ Game::~Game()
 {
     delete m_pRenderer;
     m_pRenderer = nullptr;
+
+    delete m_pInputManager;
+    m_pInputManager = nullptr;
+
+    m_pCamera = nullptr;
 }
 
 #include "RenderComponent.h"
@@ -32,12 +40,11 @@ Game::~Game()
 void Game::Init()
 {
     m_pRenderer = new Renderer();
-
     m_pRenderer->Init();
 
-    CreateGameObjects();
+    m_pInputManager = new InputManager();
 
-    CollectShaderVariables();
+    CreateGameObjects();
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -67,7 +74,7 @@ void Game::CreateGameObjects()
             m_gameObjects.push_back(factory.CreatePlanet(this));
 
             Material* pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
-            m_gameObjects[index]->GetComponent<RenderComponent>(k_renderComponentID)->Init("torusLo.obj", pMaterial);
+            m_gameObjects[index]->GetComponent<RenderComponent>(k_renderComponentID)->Init("suzanne.obj", pMaterial);
 
             float x = (float)(i * k_positionOffset);
             float y = (float)(j * k_positionOffset);
@@ -76,6 +83,9 @@ void Game::CreateGameObjects()
         }
     }
     
+    m_pCamera = factory.CreateCamera(this);
+    m_gameObjects.push_back(m_pCamera);
+
     // Object Initialization
     //INIT ALL GAME OBJECTS
     for (GameObject* pGameObj : m_gameObjects)
@@ -106,15 +116,16 @@ int Game::Update()
     m_deltaTime = SDL_GetTicks() - m_elapsed;
     m_elapsed = SDL_GetTicks();
 
-    Draw();
+    //TODO: needs to be refactored into renderer/input manager
+    if (m_pInputManager->HandleEvents() == 0)  //HANDLING WINDOW EVENTS
+        return 0;
+
+    //TODO: I'd like to get this to happen AFTER the game objects update
+    //      currently with the game components drawing themselves its a bit wonky
+    m_pRenderer->ClearScreen();
 
     //Updating objs
     UpdateGameObjects();
-
-    //TODO: needs to be refactored into renderer/input manager
-    if (m_pRenderer->HandleEvents() == 0)  //HANDLING WINDOW EVENTS
-        return 0;
-
     UpdateGameLogic();
 
     m_pRenderer->SwapWindow();
@@ -229,57 +240,4 @@ void Game::DeleteAllObjects()
 
         ++iterator;
     }
-}
-
-//-------------------------------------------------------------------------------------- -
-//  Collect Shader Variables Function
-//      -Gets the location of the uniforms for modulation in update
-//-------------------------------------------------------------------------------------- -
-void Game::CollectShaderVariables()
-{
-    //GLuint shaderProg = m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->GetShaderProgram();
-
-    //m_viewMatrixUniform = glGetUniformLocation(shaderProg, "viewMatrix");
-    //m_projectionMatrixUniform = glGetUniformLocation(shaderProg, "projectionMatrix");
-
-    //Initializing matrices to 1
-    m_viewMatrix.identity();
-    m_projectionMatrix.identity();
-
-    //TODO: This doesn't do anything
-    //Setting camera position
-    m_cameraPosition[0] = 0.f;
-    m_cameraPosition[1] = 5.f;
-    m_cameraPosition[2] = 0.f;
-
-    //Draw in perspective
-    cml::matrix_perspective_xfov_RH(m_projectionMatrix, 70.f, 800.f / 600.f, 0.1f, 1000.f, cml::z_clip_neg_one);
-}
-
-const float k_camSpeed = 0.10f;
-float camX = 0.f;
-float camY = 0.f;
-float camZ = 3.f;
-
-//-------------------------------------------------------------------------------------- -
-//  Main Application Draw Function
-//-------------------------------------------------------------------------------------- -
-void Game::Draw()
-{
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    //Setting polygon mode
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    //Set camera position and target
-    cml::vector4f cameraForward(0.f, 0.f, -1.f, 0.f);
-    cml::vector3f cameraDirection = (cameraForward).subvector(3);
-    cml::vector3f cameraPosition(camX, 0.f, camZ);
-
-    cml::matrix_look_at_RH(m_viewMatrix
-                           , cameraPosition                     //Origin
-                           , cameraPosition + cameraDirection   //Direction
-                           , cml::vector3f(0.f, 1.f, 0.f));     //Up-Direction, Y is up
-
 }

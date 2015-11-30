@@ -10,8 +10,8 @@
 
 #include <SDL.h>
 
-RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject)
-    :GameObjectComponent(id, pGameObject)
+RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject, TransformComponent* pTransform)
+    :GameObjectComponent(id, pGameObject, pTransform)
     , m_pMesh(nullptr)
     , m_pMaterial(nullptr)
     , m_elapsedTime(0)
@@ -56,14 +56,22 @@ void RenderComponent::Init(const char* fileName, Material* pMaterial)
 //  Draw Function
 //      -Makes openGL calls to draw this object
 //-------------------------------------------------------------------------------------- -
+
+#include "CameraComponent.h"
+
 void RenderComponent::Draw()
 {
     glUseProgram(m_shaderProgram);
     glBindVertexArray(GetVAO());
 
+    GameObject* pCamObject = m_pGameObject->GetGame()->GetCameraObject();
+    CameraComponent* pCameraComponent = pCamObject->GetComponent<CameraComponent>(k_cameraComponentID);
+    cml::matrix44f_c cameraViewMatrix = pCameraComponent->GetViewMatrix();
+    cml::matrix44f_c cameraProjectionMatrix = pCameraComponent->GetProjectionMatrix();
+
     glProgramUniformMatrix4fv(m_shaderProgram, GetTransformMatrixUniform(), 1, GL_FALSE, GetTransformMatrix().data());
-    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, m_pGameObject->GetGame()->GetViewMatrix().data());
-    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, m_pGameObject->GetGame()->GetProjectionMatrix().data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, cameraViewMatrix.data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, cameraProjectionMatrix.data());
 
     glDrawElements(GL_TRIANGLES, GetIndices().size(), GL_UNSIGNED_INT, &GetIndices()[0]);
 

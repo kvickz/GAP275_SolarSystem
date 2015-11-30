@@ -39,6 +39,9 @@ void Renderer::Init()
     //INIT GLEW
     glewExperimental = GL_TRUE;
     unsigned int debug = glewInit();
+
+    //Setting polygon mode
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -47,84 +50,7 @@ void Renderer::Init()
 //-------------------------------------------------------------------------------------- -
 void Renderer::Update()
 {
-
-    HandleEvents();
-}
-
-//-------------------------------------------------------------------------------------- -
-//  Handle Events Function
-//      -Encapsulates the handling of events
-//      -Returns 0 or FALSE for quitting
-//-------------------------------------------------------------------------------------- -
-int Renderer::HandleEvents()
-{
-    SDL_Event appEvent;
-    while (SDL_PollEvent(&appEvent))
-    {
-        //-------------------------
-        // WINDOW EVENT HANDLING
-        //-------------------------
-        if (appEvent.type == SDL_QUIT || appEvent.key.keysym.sym == SDLK_ESCAPE)
-            return 0;   //QUIT
-
-        //-------------------------
-        //KEY HANDLING
-        //-------------------------
-
-        //KEY DOWN EVENTS
-        if (appEvent.type == SDL_KEYDOWN)
-        {
-            //W key
-            if (appEvent.key.keysym.sym == SDLK_w)
-            {
-
-            }
-
-            //W key
-            if (appEvent.key.keysym.sym == SDLK_s)
-            {
-                
-            }
-
-            if (appEvent.key.keysym.sym == SDLK_a)
-            {
-                
-            }
-
-            if (appEvent.key.keysym.sym == SDLK_d)
-            {
-                
-            }
-        }
-
-        //KEY UP EVENTS
-        if (appEvent.type == SDL_KEYUP)
-        {
-            //W key
-            if (appEvent.key.keysym.sym == SDLK_w)
-            {
-
-            }
-
-            //W key
-            if (appEvent.key.keysym.sym == SDLK_s)
-            {
-
-            }
-
-            if (appEvent.key.keysym.sym == SDLK_a)
-            {
-
-            }
-
-            if (appEvent.key.keysym.sym == SDLK_d)
-            {
-
-            }
-        }
-    }
-
-    return 1;   //SUCCESS
+    //
 }
 
 void Renderer::Shutdown()
@@ -133,6 +59,12 @@ void Renderer::Shutdown()
     SDL_DestroyWindow(m_pWindow);
 
     SDL_Quit();
+}
+
+void Renderer::ClearScreen()
+{
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Renderer::SwapWindow()

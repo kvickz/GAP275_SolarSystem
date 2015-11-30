@@ -6,7 +6,7 @@
 #include <math.h>
 
 TransformComponent::TransformComponent(ComponentID id, GameObject* pGameObject)
-    :GameObjectComponent(id, pGameObject)
+    :GameObjectComponent(id, pGameObject, this)
 {
     m_position.x = 0;
     m_position.y = 0;

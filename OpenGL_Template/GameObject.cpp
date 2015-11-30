@@ -97,7 +97,6 @@ void GameObject::UpdateComponents()
 //-------------------------------------------------------------------------------------- -
 void GameObject::AddComponent(const ComponentID key, GameObjectComponent* pNewComponent)
 {
-    
     //If the new component is a transform component, add it to m_pTransform
     if (key == k_transformComponentID)
     {

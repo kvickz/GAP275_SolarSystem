@@ -9,17 +9,17 @@ TransformComponent* GameObjectComponentFactory::CreateTransformComponent(GameObj
     return pComponent;
 }
 
-RenderComponent* GameObjectComponentFactory::CreateRenderComponent(GameObject* pGameObject)
+RenderComponent* GameObjectComponentFactory::CreateRenderComponent(GameObject* pGameObject, TransformComponent* pTransform)
 {
-    RenderComponent* pComponent = new RenderComponent(k_renderComponentID, pGameObject);
+    RenderComponent* pComponent = new RenderComponent(k_renderComponentID, pGameObject, pTransform);
     //pComponent->LoadMeshFromFile("Sphere.obj");
 
     return pComponent;
 }
 
-CameraComponent* GameObjectComponentFactory::CreateCameraComponent(GameObject* pGameObject)
+CameraComponent* GameObjectComponentFactory::CreateCameraComponent(GameObject* pGameObject, TransformComponent* pTransform)
 {
-    CameraComponent* pComponent = new CameraComponent(k_cameraComponentID, pGameObject);
+    CameraComponent* pComponent = new CameraComponent(k_cameraComponentID, pGameObject, pTransform);
 
     return pComponent;
 }

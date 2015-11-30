@@ -8,7 +8,6 @@
 #include "Enums.h"
 
 #include <cml/cml.h>
-#include <vector>
 
 class Mesh;
 class Material;
@@ -16,7 +15,6 @@ class Material;
 typedef unsigned int GLuint;
 typedef int GLint;
 typedef std::pair<cml::matrix44f_c, GLint> TransformMatrixPair;
-typedef std::pair<cml::matrix44f_c, GLint> MatrixUniformPair;
 
 class RenderComponent : public GameObjectComponent
 {
@@ -33,7 +31,7 @@ class RenderComponent : public GameObjectComponent
     int m_elapsedTime = 0;
 
 public:
-    RenderComponent(const ComponentID id, GameObject* pGameObject);
+    RenderComponent(const ComponentID id, GameObject* pGameObject, TransformComponent* pTransform);
     ~RenderComponent();
 
     virtual void Init() override;

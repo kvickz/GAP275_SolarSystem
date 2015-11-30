@@ -21,9 +21,9 @@ public:
     void Update();
     void Shutdown();
 
-    int HandleEvents();
+    //int HandleEvents();
 
-    //TODO: Remove
+    void ClearScreen();
     void SwapWindow();
 };
 

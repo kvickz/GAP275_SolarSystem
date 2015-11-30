@@ -10,10 +10,12 @@ GameObject* GameObjectFactory::CreatePlanet(Game* pGame)
     GameObject* pObject = new GameObject(k_planetID, pGame);
 
     //Add Transform Component
-    pObject->AddComponent(k_transformComponentID, componentFactory.CreateTransformComponent(pObject));
+    TransformComponent* pTransform = componentFactory.CreateTransformComponent(pObject);
+    pObject->AddComponent(k_transformComponentID, pTransform);
 
     //Add Render Component
-    pObject->AddComponent(k_renderComponentID, componentFactory.CreateRenderComponent(pObject));
+    RenderComponent* pRenderComponent = componentFactory.CreateRenderComponent(pObject, pTransform);
+    pObject->AddComponent(k_renderComponentID, pRenderComponent);
 
     return pObject;
 }
@@ -21,13 +23,15 @@ GameObject* GameObjectFactory::CreatePlanet(Game* pGame)
 GameObject* GameObjectFactory::CreateCamera(Game* pGame)
 {
     GameObjectComponentFactory componentFactory;
-    GameObject* pObject = new GameObject(k_planetID, pGame);
+    GameObject* pObject = new GameObject(k_cameraID, pGame);
 
     //Add Transform Component
-    pObject->AddComponent(k_transformComponentID, componentFactory.CreateTransformComponent(pObject));
+    TransformComponent* pTransform = componentFactory.CreateTransformComponent(pObject);
+    pObject->AddComponent(k_transformComponentID, pTransform);
 
     //Add Camera Component
-    pObject->AddComponent(k_renderComponentID, componentFactory.CreateCameraComponent(pObject));
+    CameraComponent* pCameraComponent = componentFactory.CreateCameraComponent(pObject, pTransform);
+    pObject->AddComponent(k_cameraComponentID, pCameraComponent);
 
     return pObject;
 }
