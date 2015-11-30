@@ -39,6 +39,7 @@ public:
     virtual void Init() override;
     virtual void Update() override;
 
+    void Init(const char* fileName, Material* pMaterial);
     void LoadMeshFromFile(const char* const fileName);
     void LoadMaterial(Material* const pMaterial);
     void CreateProgram();

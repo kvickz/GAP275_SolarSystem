@@ -15,7 +15,8 @@ RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject)
     , m_pMaterial(nullptr)
     , m_elapsedTime(0)
 {
-    //
+    //Initialize to 1, 1, 1
+    m_transformMatrixPair.first.identity();
 }
 
 RenderComponent::~RenderComponent()
@@ -30,12 +31,30 @@ RenderComponent::~RenderComponent()
     m_pMaterial = nullptr;
 }
 
+//-------------------------------------------------------------------------------------- -
+//  Render Component Initialization Function
+//      -Default initialization, call the overloaded function for more functionality 
+//-------------------------------------------------------------------------------------- -
 void RenderComponent::Init()
 {
-    //Initialize to 1, 1, 1
-    m_transformMatrixPair.first.identity();
+    //
 }
 
+//-------------------------------------------------------------------------------------- -
+//  Render Component Initialization Function
+//      -Allows you to set the mesh and material of this component
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::Init(const char* fileName, Material* pMaterial)
+{
+    LoadMeshFromFile(fileName);
+    LoadMaterial(pMaterial);
+    CreateProgram();
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Load Mesh From File Function
+//      -Will load a mesh from a given file path
+//-------------------------------------------------------------------------------------- -
 void RenderComponent::Update()
 {
     float sinVal = sinf(SDL_GetTicks() * 0.001f);
@@ -79,6 +98,7 @@ void RenderComponent::LoadMaterial(Material* const pMaterial)
 //-------------------------------------------------------------------------------------- -
 //  Create Program Function
 //      -Will create a program and link shaders to it
+//      -Also handles late-phase of buffer binding
 //-------------------------------------------------------------------------------------- -
 void RenderComponent::CreateProgram()
 {

@@ -64,24 +64,23 @@ void Game::CreateGameObjects()
         pGameObj->Init();
     }
 
-    m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->LoadMeshFromFile("Sphere.obj");
-    m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->LoadMeshFromFile("suzanne.obj");
-
     m_gameObjects[0]->GetTransformComponent()->SetPosition(2.8f, 0.f, -5.9f);
     m_gameObjects[1]->GetTransformComponent()->SetPosition(-2.8f, 0.f, -5.9f);
+
+    //OBJ 0
+    Material* pMaterial = new Material();
+    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
+    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+    m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->Init("Sphere.obj", pMaterial);
+
+    //OBJ 1
+    pMaterial = new Material();
+    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
+    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+    m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->Init("Sphere.obj", pMaterial);
+
     
-    for (GameObject* pGameObj : m_gameObjects)
-    {
-        //TODO: Eventually make a material manager that deletes the materials instead
-        //      of the render components
-        //Assigning material
-        Material* pMaterial = new Material();
-        pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
-        pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
-    
-        pGameObj->GetComponent<RenderComponent>(k_renderComponentID)->LoadMaterial(pMaterial);
-        pGameObj->GetComponent<RenderComponent>(k_renderComponentID)->CreateProgram();
-    }
+
 }
 
 //-------------------------------------------------------------------------------------- -

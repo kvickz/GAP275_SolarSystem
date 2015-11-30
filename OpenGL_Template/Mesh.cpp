@@ -32,7 +32,7 @@ void Mesh::CreateObject()
     glGenBuffers(1, &m_vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, m_verts.size() * sizeof(float), &m_verts[0], GL_DYNAMIC_DRAW);
-
+    
     //EBO
     glGenBuffers(1, &m_elementBufferObject);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferObject);
