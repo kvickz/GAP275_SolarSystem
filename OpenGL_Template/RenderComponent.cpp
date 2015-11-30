@@ -2,14 +2,15 @@
 
 #include "RenderComponent.h"
 #include "TransformComponent.h"
+#include "GameObject.h"
 
 #include "Mesh.h"
 #include "Material.h"
 
 #include <SDL.h>
 
-RenderComponent::RenderComponent(ComponentID id)
-    :GameObjectComponent(id)
+RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject)
+    :GameObjectComponent(id, pGameObject)
     , m_pMesh(nullptr)
     , m_pMaterial(nullptr)
     , m_elapsedTime(0)
@@ -23,6 +24,8 @@ RenderComponent::~RenderComponent()
     delete m_pMesh;
     m_pMesh = nullptr;
 
+    //TODO: This shouldn't be deleted by the render component
+    //      I need some kind of separate manager to handle shared materials
     delete m_pMaterial;
     m_pMaterial = nullptr;
 }
@@ -35,8 +38,6 @@ void RenderComponent::Init()
 
 void RenderComponent::Update()
 {
-    ++m_elapsedTime;
-
     float sinVal = sinf(SDL_GetTicks() * 0.001f);
 
     //Rotation and translation of the object
@@ -47,7 +48,12 @@ void RenderComponent::Update()
     cml::matrix_rotate_about_local_y(objectRotation, (SDL_GetTicks() * 0.001f));
     //cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
     //TODO: Modify this based on transform's position
-    cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
+
+    float x = m_pGameObject->GetTransformComponent()->GetPosition().x;
+    float y = m_pGameObject->GetTransformComponent()->GetPosition().y;
+    float z = m_pGameObject->GetTransformComponent()->GetPosition().z;
+
+    cml::matrix_translation(objectTranslation, x, y, z);
 
     m_transformMatrixPair.first = (objectTranslation * objectRotation);
 }
@@ -90,6 +96,10 @@ void RenderComponent::CreateProgram()
 
     //TODO: Not sure where to put this just yet
     m_transformMatrixPair.second = glGetUniformLocation(m_shaderProgram, "transformMatrix");
+    m_viewMatrixUniform = glGetUniformLocation(m_shaderProgram, "viewMatrix");
+    m_projectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "projectionMatrix");
+
+    glBindVertexArray(0);
 }
 
 GLuint RenderComponent::GetVBO() { return m_pMesh->GetVBO(); }

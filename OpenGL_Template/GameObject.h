@@ -25,6 +25,7 @@ private:
     const ObjectID k_objectID;
 
     GameObjectComponents m_components;
+    TransformComponent* m_pTransform;
 
     bool m_deleteMe;
 
@@ -37,14 +38,18 @@ public:
     void DeleteObject();
     bool IsReadyToDelete() { return m_deleteMe; }
 
-    void AddComponent(ComponentID key, GameObjectComponent* pNewComponent);
-    void RemoveComponent(ComponentID key);
+    void AddComponent(const ComponentID key, GameObjectComponent* pNewComponent);
+    void RemoveComponent(const ComponentID key);
 
+    //----------------------------------------------------------------------------------
+    //  Get Component Functions
+    //----------------------------------------------------------------------------------
     template<class ComponentType>
     ComponentType* GetComponent(ComponentID id);
 
-    TransformComponent* GetTransformComponent();
-
+    TransformComponent* GetTransformComponent() { return m_pTransform; }
+    void SetTransform(TransformComponent* pTransform) { m_pTransform = pTransform; }
+    //----------------------------------------------------------------------------------
 private:
     void DestroyObject();
     void UpdateComponents();

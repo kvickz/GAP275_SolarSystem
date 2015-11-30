@@ -2,16 +2,16 @@
 
 #include "GameObjectComponentFactory.h"
 
-TransformComponent* GameObjectComponentFactory::CreateTransformComponent()
+TransformComponent* GameObjectComponentFactory::CreateTransformComponent(GameObject* pGameObject)
 {
-    TransformComponent* pComponent = new TransformComponent(k_transformComponentID);
+    TransformComponent* pComponent = new TransformComponent(k_transformComponentID, pGameObject);
 
     return pComponent;
 }
 
-RenderComponent* GameObjectComponentFactory::CreateRenderComponent()
+RenderComponent* GameObjectComponentFactory::CreateRenderComponent(GameObject* pGameObject)
 {
-    RenderComponent* pComponent = new RenderComponent(k_renderComponentID);
+    RenderComponent* pComponent = new RenderComponent(k_renderComponentID, pGameObject);
     //pComponent->LoadMeshFromFile("Sphere.obj");
 
     return pComponent;

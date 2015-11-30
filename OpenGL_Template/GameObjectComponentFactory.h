@@ -7,16 +7,15 @@
 #include "TransformComponent.h"
 #include "RenderComponent.h"
 
-typedef unsigned int ComponentID;
+#include "Constants.h"
 
-const ComponentID k_transformComponentID = 1;
-const ComponentID k_renderComponentID = 2;
+class GameObject;
 
 class GameObjectComponentFactory
 {
 public:
-    TransformComponent* CreateTransformComponent();
-    RenderComponent* CreateRenderComponent();
+    TransformComponent* CreateTransformComponent(GameObject* pGameObject);
+    RenderComponent* CreateRenderComponent(GameObject* pGameObject);
 };
 
 #endif // !GAMEOBJECTCOMPONENTFACTORY_H

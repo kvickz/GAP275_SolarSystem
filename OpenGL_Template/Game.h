@@ -21,9 +21,9 @@ class Game
 private:
     //TODO: Clean dis shit up
     //----------------------------------
-    // SHADER VARIABLES :: MAJOR REFACTORING NEEDS TO BE DONE WITH THESE
-    GLint m_viewMatrixUniform;
-    GLint m_projectionMatrixUniform;
+    // SHADER VARIABLES :: Not sure of where to put these just yet
+    //GLint m_viewMatrixUniform;
+    //GLint m_projectionMatrixUniform;
 
     cml::matrix44f_c m_viewMatrix;
     cml::matrix44f_c m_projectionMatrix;
@@ -52,8 +52,8 @@ public:
 
 private:
     //TODO: Super refactor!
-    GLint GetViewMatrixUniform() { return m_viewMatrixUniform; }
-    GLint GetProjectionMatrixUniform() { return m_projectionMatrixUniform; }
+    //GLint GetViewMatrixUniform() { return m_viewMatrixUniform; }
+    //GLint GetProjectionMatrixUniform() { return m_projectionMatrixUniform; }
     cml::matrix44f_c GetViewMatrix() { return m_viewMatrix; }
     cml::matrix44f_c GetProjectionMatrix() { return m_projectionMatrix; }
     cml::vector3f GetCameraPosition() { return m_cameraPosition; }

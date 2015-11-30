@@ -13,10 +13,13 @@ private:
     Vector3 m_position;
 
 public:
-    TransformComponent(ComponentID id);
+    TransformComponent(const ComponentID id, GameObject* pGameObject);
     ~TransformComponent();
 
     virtual void Update() override;
+
+    Vector3 GetPosition() { return m_position; }
+    void SetPosition(float x, float y, float z);
 };
 
 #endif // !TRANSFORMCOMPONENT_H

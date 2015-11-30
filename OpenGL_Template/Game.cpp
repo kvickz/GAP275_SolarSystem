@@ -46,26 +46,42 @@ void Game::Init()
 //       all of the initial objects for the game.
 //-------------------------------------------------------------------------------------- -
 #include "Enums.h"
+#include "Constants.h"
 #include "Material.h"
+#include "TransformComponent.h"
 
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory;
 
     m_gameObjects.push_back(factory.CreatePlanet());
+    m_gameObjects.push_back(factory.CreatePlanet());
 
     // Object Initialization
-    //TODO: Remove, this is just for testing
-    m_gameObjects[0]->Init();
-    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMeshFromFile("Sphere.obj");
-    
-    //Assigning material
-    Material* pMaterial = new Material();
-    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
-    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+    //INIT ALL GAME OBJECTS
+    for (GameObject* pGameObj : m_gameObjects)
+    {
+        pGameObj->Init();
+    }
 
-    m_gameObjects[0]->GetComponent<RenderComponent>(2)->LoadMaterial(pMaterial);
-    m_gameObjects[0]->GetComponent<RenderComponent>(2)->CreateProgram();
+    m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->LoadMeshFromFile("Sphere.obj");
+    m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->LoadMeshFromFile("suzanne.obj");
+
+    m_gameObjects[0]->GetTransformComponent()->SetPosition(2.8f, 0.f, -5.9f);
+    m_gameObjects[1]->GetTransformComponent()->SetPosition(-2.8f, 0.f, -5.9f);
+    
+    for (GameObject* pGameObj : m_gameObjects)
+    {
+        //TODO: Eventually make a material manager that deletes the materials instead
+        //      of the render components
+        //Assigning material
+        Material* pMaterial = new Material();
+        pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
+        pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+    
+        pGameObj->GetComponent<RenderComponent>(k_renderComponentID)->LoadMaterial(pMaterial);
+        pGameObj->GetComponent<RenderComponent>(k_renderComponentID)->CreateProgram();
+    }
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -184,10 +200,10 @@ void Game::DeleteAllObjects()
 //-------------------------------------------------------------------------------------- -
 void Game::CollectShaderVariables()
 {
-    GLuint shaderProg = m_gameObjects[0]->GetComponent<RenderComponent>(2)->GetShaderProgram();
+    //GLuint shaderProg = m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->GetShaderProgram();
 
-    m_viewMatrixUniform = glGetUniformLocation(shaderProg, "viewMatrix");
-    m_projectionMatrixUniform = glGetUniformLocation(shaderProg, "projectionMatrix");
+    //m_viewMatrixUniform = glGetUniformLocation(shaderProg, "viewMatrix");
+    //m_projectionMatrixUniform = glGetUniformLocation(shaderProg, "projectionMatrix");
 
     //Initializing matrices to 1
     m_viewMatrix.identity();
@@ -199,13 +215,15 @@ void Game::CollectShaderVariables()
     m_cameraPosition[2] = 0.f;
 
     //Draw in perspective
-    cml::matrix_perspective_xfov_RH(m_projectionMatrix, 90.f, 800.f / 600.f, 0.1f, 1000.f, cml::z_clip_neg_one);
+    cml::matrix_perspective_xfov_RH(m_projectionMatrix, 70.f, 800.f / 600.f, 0.1f, 1000.f, cml::z_clip_neg_one);
 }
 
 const float k_camSpeed = 0.10f;
 float camX = 0.f;
 float camY = 0.f;
-float camZ = 0.f;
+float camZ = 3.f;
+
+unsigned int renderCount = 0;
 
 //-------------------------------------------------------------------------------------- -
 //  Main Application Draw Function
@@ -214,6 +232,8 @@ void Game::Draw()
 {
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    ++renderCount;
 
     //BINDING BUFFERS
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -227,10 +247,13 @@ void Game::Draw()
                            , cameraPosition                     //Origin
                            , cameraPosition + cameraDirection   //Direction
                            , cml::vector3f(0.f, 1.f, 0.f));     //Up-Direction, Y is up
-
+    
     //Render objects
-    RenderComponent* pRenderComponent = m_gameObjects[0]->GetComponent<RenderComponent>(2);
-    DrawObject(pRenderComponent);
+    for (GameObject* pGameObj : m_gameObjects)
+    {
+        RenderComponent* pRenderComponent = pGameObj->GetComponent<RenderComponent>(k_renderComponentID);
+        DrawObject(pRenderComponent);
+    }
 }
 
 void Game::DrawObject(RenderComponent* pRenderer)
@@ -240,8 +263,10 @@ void Game::DrawObject(RenderComponent* pRenderer)
     glBindVertexArray(pRenderer->GetVAO());
 
     glProgramUniformMatrix4fv(shaderProg, pRenderer->GetTransformMatrixUniform(), 1, GL_FALSE, pRenderer->GetTransformMatrix().data());
-    glProgramUniformMatrix4fv(shaderProg, m_viewMatrixUniform, 1, GL_FALSE, m_viewMatrix.data());
-    glProgramUniformMatrix4fv(shaderProg, m_projectionMatrixUniform, 1, GL_FALSE, m_projectionMatrix.data());
+    glProgramUniformMatrix4fv(shaderProg, pRenderer->GetViewMatrixUniform(), 1, GL_FALSE, m_viewMatrix.data());
+    glProgramUniformMatrix4fv(shaderProg, pRenderer->GetProjectionMatrixUniform(), 1, GL_FALSE, m_projectionMatrix.data());
 
     glDrawElements(GL_TRIANGLES, pRenderer->GetIndices().size(), GL_UNSIGNED_INT, &pRenderer->GetIndices()[0]);
+
+    glBindVertexArray(0);
 }

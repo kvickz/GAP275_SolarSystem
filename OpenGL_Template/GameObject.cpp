@@ -2,6 +2,9 @@
 
 #include "GameObject.h"
 #include "GameObjectComponent.h"
+#include "TransformComponent.h"
+
+#include "Constants.h"
 
 unsigned int GameObject::s_objectInstanceCounter = 0;
 
@@ -82,8 +85,20 @@ void GameObject::UpdateComponents()
 //      -Adds a component to game object given a pointer to the component.
 //      -Only meant to be called by the factory that creates this object.
 //-------------------------------------------------------------------------------------- -
-void GameObject::AddComponent(ComponentID key, GameObjectComponent* pNewComponent)
+void GameObject::AddComponent(const ComponentID key, GameObjectComponent* pNewComponent)
 {
+    
+    //If the new component is a transform component, add it to m_pTransform
+    if (key == k_transformComponentID)
+    {
+        //Only allow 1 transform
+        if (m_pTransform)
+            return;
+     
+        m_pTransform = static_cast<TransformComponent*>(pNewComponent);
+    }
+    
+    //Otherwise add as usual
     m_components.emplace(key, pNewComponent);
 }
 
@@ -93,7 +108,7 @@ void GameObject::AddComponent(ComponentID key, GameObjectComponent* pNewComponen
 //      -Not tested but might have issues with duplicate components.
 //      -TODO: Test for duplicate functionality errors
 //-------------------------------------------------------------------------------------- -
-void GameObject::RemoveComponent(ComponentID key)
+void GameObject::RemoveComponent(const ComponentID key)
 {
     //TODO: Mark for deletion? probably needs to happen
     m_components.erase(key);

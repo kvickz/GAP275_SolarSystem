@@ -10,10 +10,10 @@ GameObject* GameObjectFactory::CreatePlanet()
     GameObject* pObject = new GameObject(k_planetID);
 
     //Add Transform Component
-    pObject->AddComponent(k_transformComponentID, componentFactory.CreateTransformComponent());
+    pObject->AddComponent(k_transformComponentID, componentFactory.CreateTransformComponent(pObject));
 
     //Add Render Component
-    pObject->AddComponent(k_renderComponentID, componentFactory.CreateRenderComponent());
+    pObject->AddComponent(k_renderComponentID, componentFactory.CreateRenderComponent(pObject));
 
     return pObject;
 }

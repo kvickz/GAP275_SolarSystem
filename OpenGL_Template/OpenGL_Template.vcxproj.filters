@@ -81,6 +81,9 @@
     <ClInclude Include="Enums.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShader.glsl">

@@ -2,8 +2,9 @@
 
 #include "GameObjectComponent.h"
 
-GameObjectComponent::GameObjectComponent(ComponentID id)
+GameObjectComponent::GameObjectComponent(const ComponentID id, GameObject* pGameObject)
     :m_componentID(id)
+    , m_pGameObject(pGameObject)
 {
     //
 }

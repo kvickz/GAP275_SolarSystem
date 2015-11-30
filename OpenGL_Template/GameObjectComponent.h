@@ -19,7 +19,7 @@ protected:
     TransformComponent* m_pTransform;
 
 public:
-    GameObjectComponent(ComponentID id);
+    GameObjectComponent(const ComponentID id, GameObject* pGameObject);
     virtual ~GameObjectComponent() {};
 
     virtual void Init() {};
