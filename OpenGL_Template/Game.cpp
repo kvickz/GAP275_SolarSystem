@@ -42,7 +42,7 @@ void Game::Init()
     m_pRenderer = new Renderer();
     m_pRenderer->Init();
 
-    m_pInputManager = new InputManager();
+    m_pInputManager = new InputManager(this);
 
     CreateGameObjects();
 }

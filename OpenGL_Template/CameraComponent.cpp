@@ -42,7 +42,7 @@ void CameraComponent::Update()
     float x = sinf(SDL_GetTicks() * 0.001f) * 5.f;
     float y = cosf(SDL_GetTicks() * 0.001f) * 5.f;
     float z = 0;
-    m_pTransform->SetPosition(x, y, z);
+    //m_pTransform->SetPosition(x, y, z);
 
     //Set camera position and target
     cml::vector3f cameraDirection(0.f, 0.f, -1.f);
