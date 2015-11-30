@@ -5,11 +5,14 @@
 
 #include "GameObject.h"
 
-const unsigned int k_planetID = 1;
+#include "Constants.h"
+
+class Game;
 
 class GameObjectFactory
 {
 public:
-    GameObject* CreatePlanet();
+    GameObject* CreatePlanet(Game* pGame);
+    GameObject* CreateCamera(Game* pGame);
 };
 #endif // !GAMEOBJECTFACTORY_H

@@ -3,6 +3,7 @@
 #include "RenderComponent.h"
 #include "TransformComponent.h"
 #include "GameObject.h"
+#include "Game.h"
 
 #include "Mesh.h"
 #include "Material.h"
@@ -52,11 +53,30 @@ void RenderComponent::Init(const char* fileName, Material* pMaterial)
 }
 
 //-------------------------------------------------------------------------------------- -
+//  Draw Function
+//      -Makes openGL calls to draw this object
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::Draw()
+{
+    glUseProgram(m_shaderProgram);
+    glBindVertexArray(GetVAO());
+
+    glProgramUniformMatrix4fv(m_shaderProgram, GetTransformMatrixUniform(), 1, GL_FALSE, GetTransformMatrix().data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, m_pGameObject->GetGame()->GetViewMatrix().data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, m_pGameObject->GetGame()->GetProjectionMatrix().data());
+
+    glDrawElements(GL_TRIANGLES, GetIndices().size(), GL_UNSIGNED_INT, &GetIndices()[0]);
+
+    glBindVertexArray(0);
+}
+
+//-------------------------------------------------------------------------------------- -
 //  Load Mesh From File Function
 //      -Will load a mesh from a given file path
 //-------------------------------------------------------------------------------------- -
 void RenderComponent::Update()
 {
+    //This logic sets the translation and rotation of the drawn image
     float sinVal = sinf(SDL_GetTicks() * 0.001f);
 
     //Rotation and translation of the object
@@ -65,8 +85,9 @@ void RenderComponent::Update()
 
     objectRotation.identity();
     cml::matrix_rotate_about_local_y(objectRotation, (SDL_GetTicks() * 0.001f));
+
+    //cml::matrix_rotate_about_local_axis()
     //cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
-    //TODO: Modify this based on transform's position
 
     float x = m_pGameObject->GetTransformComponent()->GetPosition().x;
     float y = m_pGameObject->GetTransformComponent()->GetPosition().y;
@@ -75,6 +96,9 @@ void RenderComponent::Update()
     cml::matrix_translation(objectTranslation, x, y, z);
 
     m_transformMatrixPair.first = (objectTranslation * objectRotation);
+
+    //** Draw! **//
+    Draw();
 }
 
 //-------------------------------------------------------------------------------------- -

@@ -50,13 +50,32 @@ void Game::Init()
 #include "Material.h"
 #include "TransformComponent.h"
 
+const int k_numOfSpheres = 4;
+const int k_positionOffset = 4;
+
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory;
 
-    m_gameObjects.push_back(factory.CreatePlanet());
-    m_gameObjects.push_back(factory.CreatePlanet());
+    //Creating a grid of objects
+    for (int j = 0; j < k_numOfSpheres; ++j)
+    {
+        for (int i = 0; i < k_numOfSpheres; ++i)
+        {
+            unsigned int index = j * k_numOfSpheres + i;
 
+            m_gameObjects.push_back(factory.CreatePlanet(this));
+
+            Material* pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
+            m_gameObjects[index]->GetComponent<RenderComponent>(k_renderComponentID)->Init("torusLo.obj", pMaterial);
+
+            float x = (float)(i * k_positionOffset);
+            float y = (float)(j * k_positionOffset);
+            float z = -50.f;
+            m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
+        }
+    }
+    
     // Object Initialization
     //INIT ALL GAME OBJECTS
     for (GameObject* pGameObj : m_gameObjects)
@@ -64,23 +83,18 @@ void Game::CreateGameObjects()
         pGameObj->Init();
     }
 
-    m_gameObjects[0]->GetTransformComponent()->SetPosition(2.8f, 0.f, -5.9f);
-    m_gameObjects[1]->GetTransformComponent()->SetPosition(-2.8f, 0.f, -5.9f);
-
+    /*
     //OBJ 0
-    Material* pMaterial = new Material();
-    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
-    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+    Material* pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
     m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->Init("Sphere.obj", pMaterial);
 
     //OBJ 1
-    pMaterial = new Material();
-    pMaterial->LoadShader("VertexShader.glsl", ShaderType::k_vertex);
-    pMaterial->LoadShader("FragmentShader.glsl", ShaderType::k_fragment);
+    pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
     m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->Init("Sphere.obj", pMaterial);
 
-    
-
+    m_gameObjects[0]->GetTransformComponent()->SetPosition(2.8f, 0.f, -5.9f);
+    m_gameObjects[1]->GetTransformComponent()->SetPosition(-2.8f, 0.f, -5.9f);
+    */
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -92,6 +106,8 @@ int Game::Update()
     m_deltaTime = SDL_GetTicks() - m_elapsed;
     m_elapsed = SDL_GetTicks();
 
+    Draw();
+
     //Updating objs
     UpdateGameObjects();
 
@@ -99,7 +115,7 @@ int Game::Update()
     if (m_pRenderer->HandleEvents() == 0)  //HANDLING WINDOW EVENTS
         return 0;
 
-    Draw();
+    UpdateGameLogic();
 
     m_pRenderer->SwapWindow();
 
@@ -107,6 +123,28 @@ int Game::Update()
     DeleteQueuedObjects();
 
     return 1;   //SUCCESS
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Update Game Logic Function
+//      -Runs any custom game logic
+//-------------------------------------------------------------------------------------- -
+void Game::UpdateGameLogic()
+{
+    float sinVal = sinf(SDL_GetTicks() * 0.001f);
+
+    for (int j = 0; j < k_numOfSpheres; ++j)
+    {
+        for (int i = 0; i < k_numOfSpheres; ++i)
+        {
+            unsigned int index = j * k_numOfSpheres + i;
+
+            float x = ((sinVal * 3.f) + ((float)(i * k_positionOffset)));
+            float y = (float)(j * k_positionOffset);
+            float z = -50.f;
+            m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -208,6 +246,7 @@ void Game::CollectShaderVariables()
     m_viewMatrix.identity();
     m_projectionMatrix.identity();
 
+    //TODO: This doesn't do anything
     //Setting camera position
     m_cameraPosition[0] = 0.f;
     m_cameraPosition[1] = 5.f;
@@ -222,8 +261,6 @@ float camX = 0.f;
 float camY = 0.f;
 float camZ = 3.f;
 
-unsigned int renderCount = 0;
-
 //-------------------------------------------------------------------------------------- -
 //  Main Application Draw Function
 //-------------------------------------------------------------------------------------- -
@@ -232,9 +269,7 @@ void Game::Draw()
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    ++renderCount;
-
-    //BINDING BUFFERS
+    //Setting polygon mode
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Set camera position and target
@@ -246,26 +281,5 @@ void Game::Draw()
                            , cameraPosition                     //Origin
                            , cameraPosition + cameraDirection   //Direction
                            , cml::vector3f(0.f, 1.f, 0.f));     //Up-Direction, Y is up
-    
-    //Render objects
-    for (GameObject* pGameObj : m_gameObjects)
-    {
-        RenderComponent* pRenderComponent = pGameObj->GetComponent<RenderComponent>(k_renderComponentID);
-        DrawObject(pRenderComponent);
-    }
-}
 
-void Game::DrawObject(RenderComponent* pRenderer)
-{
-    GLuint shaderProg = pRenderer->GetShaderProgram();
-    glUseProgram(shaderProg);
-    glBindVertexArray(pRenderer->GetVAO());
-
-    glProgramUniformMatrix4fv(shaderProg, pRenderer->GetTransformMatrixUniform(), 1, GL_FALSE, pRenderer->GetTransformMatrix().data());
-    glProgramUniformMatrix4fv(shaderProg, pRenderer->GetViewMatrixUniform(), 1, GL_FALSE, m_viewMatrix.data());
-    glProgramUniformMatrix4fv(shaderProg, pRenderer->GetProjectionMatrixUniform(), 1, GL_FALSE, m_projectionMatrix.data());
-
-    glDrawElements(GL_TRIANGLES, pRenderer->GetIndices().size(), GL_UNSIGNED_INT, &pRenderer->GetIndices()[0]);
-
-    glBindVertexArray(0);
 }

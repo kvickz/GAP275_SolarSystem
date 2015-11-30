@@ -3,10 +3,12 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+
 #include <unordered_map>
 
 class GameObjectComponent;
 class TransformComponent;
+class Game;
 
 typedef unsigned int ComponentID;
 typedef unsigned int ObjectInstanceID;
@@ -24,13 +26,14 @@ private:
     ObjectInstanceID m_objectInstanceID;
     const ObjectID k_objectID;
 
+    Game* m_pGame;
     GameObjectComponents m_components;
     TransformComponent* m_pTransform;
 
     bool m_deleteMe;
 
 public:
-    GameObject(ObjectID id);
+    GameObject(const ObjectID id, Game* pGameInstance);
     ~GameObject();
 
     void Init();
@@ -40,6 +43,8 @@ public:
 
     void AddComponent(const ComponentID key, GameObjectComponent* pNewComponent);
     void RemoveComponent(const ComponentID key);
+
+    Game* GetGame() { return m_pGame; }
 
     //----------------------------------------------------------------------------------
     //  Get Component Functions

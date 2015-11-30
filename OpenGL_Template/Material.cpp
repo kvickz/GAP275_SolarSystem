@@ -12,6 +12,12 @@ Material::Material()
     //
 }
 
+Material::Material(char* pVertexFilePath, char* pFragmentFilePath)
+{
+    LoadShader(pVertexFilePath, ShaderType::k_vertex);
+    LoadShader(pFragmentFilePath, ShaderType::k_fragment);
+}
+
 Material::~Material()
 {
     //

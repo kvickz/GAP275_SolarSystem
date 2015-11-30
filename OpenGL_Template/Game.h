@@ -21,10 +21,6 @@ class Game
 private:
     //TODO: Clean dis shit up
     //----------------------------------
-    // SHADER VARIABLES :: Not sure of where to put these just yet
-    //GLint m_viewMatrixUniform;
-    //GLint m_projectionMatrixUniform;
-
     cml::matrix44f_c m_viewMatrix;
     cml::matrix44f_c m_projectionMatrix;
 
@@ -39,6 +35,8 @@ private:
     std::vector<GameObject*> m_gameObjects;
     std::queue<GameObject*> m_gameObjectsToDelete;
 
+    GameObject* m_pCamera;
+
     Renderer* m_pRenderer;
     //----------------------------------
 
@@ -50,16 +48,14 @@ public:
     int Update();
     void Shutdown();
 
-private:
-    //TODO: Super refactor!
-    //GLint GetViewMatrixUniform() { return m_viewMatrixUniform; }
-    //GLint GetProjectionMatrixUniform() { return m_projectionMatrixUniform; }
     cml::matrix44f_c GetViewMatrix() { return m_viewMatrix; }
     cml::matrix44f_c GetProjectionMatrix() { return m_projectionMatrix; }
     cml::vector3f GetCameraPosition() { return m_cameraPosition; }
+    GameObject* GetCameraObject() { return m_pCamera; }
 
+private:
+    void UpdateGameLogic();
     void CollectShaderVariables();
-
     void CreateGameObjects();
     void UpdateGameObjects();
     void RemoveGameObject(GameObject* pGameObject);

@@ -43,6 +43,7 @@ public:
     void LoadMeshFromFile(const char* const fileName);
     void LoadMaterial(Material* const pMaterial);
     void CreateProgram();
+    void Draw();
 
     Material* const GetMaterial() { return m_pMaterial; }
 

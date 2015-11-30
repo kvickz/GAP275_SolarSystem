@@ -1,6 +1,8 @@
 //GameObject.cpp
 
 #include "GameObject.h"
+
+#include "Game.h"
 #include "GameObjectComponent.h"
 #include "TransformComponent.h"
 
@@ -8,8 +10,9 @@
 
 unsigned int GameObject::s_objectInstanceCounter = 0;
 
-GameObject::GameObject(ObjectID id)
+GameObject::GameObject(const ObjectID id, Game* pGameInstance)
     :k_objectID(id)
+    , m_pGame(pGameInstance)
     , m_deleteMe(false)
 {
     m_objectInstanceID = s_objectInstanceCounter;
@@ -21,6 +24,10 @@ GameObject::~GameObject()
     DestroyObject();
 }
 
+//-------------------------------------------------------------------------------------- -
+//  Game Object Initialization Function
+//      -Calls Init() on all game object's components
+//-------------------------------------------------------------------------------------- -
 void GameObject::Init()
 {
     //Initialize all components
@@ -53,6 +60,9 @@ void GameObject::DestroyObject()
 
         m_components.erase(tempIterator);
     }
+
+    m_pTransform = nullptr;
+    m_pGame = nullptr;
 }
 
 //-------------------------------------------------------------------------------------- -

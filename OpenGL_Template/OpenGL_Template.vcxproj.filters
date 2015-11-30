@@ -40,6 +40,9 @@
     <ClCompile Include="Material.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -83,6 +86,9 @@
     </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

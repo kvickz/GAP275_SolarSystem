@@ -16,3 +16,10 @@ RenderComponent* GameObjectComponentFactory::CreateRenderComponent(GameObject* p
 
     return pComponent;
 }
+
+CameraComponent* GameObjectComponentFactory::CreateCameraComponent(GameObject* pGameObject)
+{
+    CameraComponent* pComponent = new CameraComponent(k_cameraComponentID, pGameObject);
+
+    return pComponent;
+}

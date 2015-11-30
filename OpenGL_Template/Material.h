@@ -19,6 +19,7 @@ private:
 
 public:
     Material();
+    Material(char* pVertexFilePath, char* pFragmentFilePath);
     ~Material();
 
     void LoadShader(const char* const fileName, ShaderType type);
