@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "InputManager.h"
 #include "FileLoader.h"
+#include "Time.h"
 
 #include "GameObject.h"
 #include "GameObjectFactory.h"
@@ -15,8 +16,9 @@ Game::Game()
     , m_pRenderer(nullptr)
     , m_pInputManager(nullptr)
     , m_pCamera(nullptr)
-    , m_deltaTime(0)
-    , m_elapsed(0)
+    , m_pTime(nullptr)
+    //, m_deltaTime(0)
+    //, m_elapsed(0)
 {
     //
 }
@@ -28,6 +30,9 @@ Game::~Game()
 
     delete m_pInputManager;
     m_pInputManager = nullptr;
+
+    delete m_pTime;
+    m_pTime = nullptr;
 
     m_pCamera = nullptr;
 }
@@ -43,6 +48,9 @@ void Game::Init()
     m_pRenderer->Init();
 
     m_pInputManager = new InputManager(this);
+    
+
+    m_pTime = new Time();
 
     CreateGameObjects();
 }
@@ -62,7 +70,7 @@ const int k_positionOffset = 4;
 
 void Game::CreateGameObjects()
 {
-    GameObjectFactory factory;
+    GameObjectFactory factory(m_pRenderer, m_pTime);
 
     //Creating a grid of objects
     for (int j = 0; j < k_numOfSpheres; ++j)
@@ -84,6 +92,7 @@ void Game::CreateGameObjects()
     }
     
     m_pCamera = factory.CreateCamera(this);
+    m_pInputManager->AddPlayer(0, m_pCamera);
     m_gameObjects.push_back(m_pCamera);
 
     // Object Initialization
@@ -112,9 +121,8 @@ void Game::CreateGameObjects()
 //-------------------------------------------------------------------------------------- -
 int Game::Update()
 {
-    //Calculating time delta
-    m_deltaTime = SDL_GetTicks() - m_elapsed;
-    m_elapsed = SDL_GetTicks();
+    //Calculating time
+    m_pTime->Update();
 
     //TODO: needs to be refactored into renderer/input manager
     if (m_pInputManager->HandleEvents() == 0)  //HANDLING WINDOW EVENTS
@@ -240,4 +248,14 @@ void Game::DeleteAllObjects()
 
         ++iterator;
     }
+}
+
+int Game::GetDeltaTime() 
+{ 
+    return m_pTime->GetDeltaTime();
+}
+
+unsigned long Game::GetElapsedTime() 
+{ 
+    return m_pTime->GetElapsedTime();
 }

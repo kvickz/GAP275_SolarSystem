@@ -46,6 +46,15 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>CommandPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraMoveCommand.cpp">
+      <Filter>CommandPattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -96,6 +105,15 @@
     <ClInclude Include="InputManager.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>CommandPattern</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraMoveCommand.h">
+      <Filter>CommandPattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShader.glsl">
@@ -120,6 +138,9 @@
     </Filter>
     <Filter Include="GameObject\Components">
       <UniqueIdentifier>{0b390fb2-e2fa-461f-a12a-abbbb035784e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CommandPattern">
+      <UniqueIdentifier>{1c8f8f01-ce9d-4017-b82c-67c5dc41f94c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

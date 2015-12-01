@@ -51,6 +51,8 @@ public:
     //----------------------------------------------------------------------------------
     template<class ComponentType>
     ComponentType* GetComponent(ComponentID id);
+    template<class ComponentType>
+    ComponentType* GetComponentReinterpret(ComponentID id);
 
     TransformComponent* GetTransformComponent() { return m_pTransform; }
     void SetTransform(TransformComponent* pTransform) { m_pTransform = pTransform; }
@@ -69,7 +71,24 @@ private:
 template<typename ComponentType>
 ComponentType* GameObject::GetComponent(ComponentID id)
 {
+    auto iterator = m_components[id];
+    
+    if (iterator == nullptr)
+    { 
+        //Make a wrapper for this
+        SDL_Log("Error getting component of id: " + id);
+        return nullptr;
+    }
+
     return static_cast<ComponentType*>(m_components[id]);
 }
+//[???]
+//Need to use this for CameraComponent for some reason
+template<typename ComponentType>
+ComponentType* GameObject::GetComponentReinterpret(ComponentID id)
+{
+    return reinterpret_cast<ComponentType*>(m_components[id]);
+}
+
 
 #endif // !GAMEOBJECT_H

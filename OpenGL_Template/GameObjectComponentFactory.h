@@ -11,13 +11,15 @@
 #include "Constants.h"
 
 class GameObject;
+class Renderer;
+class Time;
 
 class GameObjectComponentFactory
 {
 public:
     TransformComponent* CreateTransformComponent(GameObject* pGameObject);
     RenderComponent* CreateRenderComponent(GameObject* pGameObject, TransformComponent* pTransform);
-    CameraComponent* CreateCameraComponent(GameObject* pGameObject, TransformComponent* pTransform);
+    CameraComponent* CreateCameraComponent(GameObject* pGameObject, TransformComponent* pTransform, Renderer* const pRenderer, Time* const pTime);
 };
 
 #endif // !GAMEOBJECTCOMPONENTFACTORY_H

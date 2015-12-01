@@ -31,7 +31,7 @@ void Renderer::Init()
     //CREATE WINDOW
     m_pWindow = SDL_CreateWindow("OpenGL Tut"
                                  , SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED
-                                 , 800, 600
+                                 , k_screenWidth, k_screenHeight
                                  , SDL_WINDOW_OPENGL);
 
     m_context = SDL_GL_CreateContext(m_pWindow);

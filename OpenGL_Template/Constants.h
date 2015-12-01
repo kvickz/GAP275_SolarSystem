@@ -26,4 +26,10 @@ const ComponentID k_renderComponentID = 2;
 const ComponentID k_cameraComponentID = 3;
 //***********************************************
 
+//***********************************************
+//  CONSTANT VALUES
+//***********************************************
+const int k_maxIntValue = 0x7fffffff;
+//***********************************************
+
 #endif // !CONSTANTS_H

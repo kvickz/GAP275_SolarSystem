@@ -4,6 +4,13 @@
 
 #include "GameObjectComponentFactory.h"
 
+GameObjectFactory::GameObjectFactory(Renderer* const pRenderer, Time* const pTime)
+    :k_pRenderer(pRenderer)
+    , k_pTime(pTime)
+{
+    //
+}
+
 GameObject* GameObjectFactory::CreatePlanet(Game* pGame)
 {
     GameObjectComponentFactory componentFactory;
@@ -30,7 +37,7 @@ GameObject* GameObjectFactory::CreateCamera(Game* pGame)
     pObject->AddComponent(k_transformComponentID, pTransform);
 
     //Add Camera Component
-    CameraComponent* pCameraComponent = componentFactory.CreateCameraComponent(pObject, pTransform);
+    CameraComponent* pCameraComponent = componentFactory.CreateCameraComponent(pObject, pTransform, k_pRenderer, k_pTime);
     pObject->AddComponent(k_cameraComponentID, pCameraComponent);
 
     return pObject;

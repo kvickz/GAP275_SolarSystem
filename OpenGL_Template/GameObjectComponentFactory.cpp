@@ -17,9 +17,9 @@ RenderComponent* GameObjectComponentFactory::CreateRenderComponent(GameObject* p
     return pComponent;
 }
 
-CameraComponent* GameObjectComponentFactory::CreateCameraComponent(GameObject* pGameObject, TransformComponent* pTransform)
+CameraComponent* GameObjectComponentFactory::CreateCameraComponent(GameObject* pGameObject, TransformComponent* pTransform, Renderer* const pRenderer, Time* const pTime)
 {
-    CameraComponent* pComponent = new CameraComponent(k_cameraComponentID, pGameObject, pTransform);
+    CameraComponent* pComponent = new CameraComponent(k_cameraComponentID, pGameObject, pTransform, pRenderer, pTime);
 
     return pComponent;
 }

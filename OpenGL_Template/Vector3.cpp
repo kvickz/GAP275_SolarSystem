@@ -15,3 +15,17 @@ Vector3::Vector3(float x, float y, float z)
     this->y = y;
     this->z = z;
 }
+
+void Vector3::SetValue(float x, float y, float z)
+{
+    this->x = x;
+    this->y = y;
+    this->z = z;
+}
+
+void Vector3::Add(float x, float y, float z)
+{
+    this->x += x;
+    this->y += y;
+    this->z += z;
+}

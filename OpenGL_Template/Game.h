@@ -11,6 +11,7 @@
 class Renderer;
 class InputManager;
 class GameObject;
+class Time;
 
 typedef unsigned int GLuint;
 typedef int GLint;
@@ -20,8 +21,6 @@ class RenderComponent;
 class Game
 {
 private:
-    unsigned int m_deltaTime;
-    unsigned int m_elapsed;
     bool m_running;
 
     std::vector<GameObject*> m_gameObjects;
@@ -30,6 +29,7 @@ private:
 
     Renderer* m_pRenderer;
     InputManager* m_pInputManager;
+    Time* m_pTime;
 
 public:
     Game();
@@ -40,6 +40,8 @@ public:
     void Shutdown();
 
     GameObject* GetCameraObject() { return m_pCamera; }
+    int GetDeltaTime();
+    unsigned long GetElapsedTime();
 
 private:
     void UpdateGameLogic();

@@ -13,6 +13,9 @@ private:
     SDL_Window* m_pWindow;
     SDL_GLContext m_context;
 
+    const unsigned int k_screenWidth = 1200;
+    const unsigned int k_screenHeight = 800;
+
 public:
     Renderer();
     ~Renderer();
@@ -25,6 +28,8 @@ public:
 
     void ClearScreen();
     void SwapWindow();
+
+    float GetAspectRatio() const { return (float)k_screenWidth / (float)k_screenHeight; }
 };
 
 #endif // !RENDERER_H
