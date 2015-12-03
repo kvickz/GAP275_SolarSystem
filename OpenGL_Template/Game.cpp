@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "Renderer.h"
+#include "AssetManager.h"
 #include "InputManager.h"
 #include "FileLoader.h"
 #include "Time.h"
@@ -14,6 +15,7 @@
 Game::Game()
     :m_running(true)
     , m_pRenderer(nullptr)
+    , m_pAssetManager(nullptr)
     , m_pInputManager(nullptr)
     , m_pCamera(nullptr)
     , m_pTime(nullptr)
@@ -28,6 +30,9 @@ Game::~Game()
     delete m_pRenderer;
     m_pRenderer = nullptr;
 
+    delete m_pAssetManager;
+    m_pAssetManager = nullptr;
+
     delete m_pInputManager;
     m_pInputManager = nullptr;
 
@@ -41,14 +46,16 @@ Game::~Game()
 
 //-------------------------------------------------------------------------------------- -
 //  Main Game Initialization Function
+//      -Initializes all of the main systems of the game
+//      -Loads all necessary data and creates all the initial game objects
 //-------------------------------------------------------------------------------------- -
 void Game::Init()
 {
     m_pRenderer = new Renderer();
     m_pRenderer->Init();
 
+    m_pAssetManager = new AssetManager();
     m_pInputManager = new InputManager(this);
-    
 
     m_pTime = new Time();
 
@@ -64,6 +71,7 @@ void Game::Init()
 #include "Constants.h"
 #include "Material.h"
 #include "TransformComponent.h"
+#include "Mesh.h"
 
 const int k_numOfSpheres = 4;
 const int k_positionOffset = 4;
@@ -71,6 +79,8 @@ const int k_positionOffset = 4;
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
+    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("torusLo.obj");
+    Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
 
     //Creating a grid of objects
     for (int j = 0; j < k_numOfSpheres; ++j)
@@ -80,9 +90,7 @@ void Game::CreateGameObjects()
             unsigned int index = j * k_numOfSpheres + i;
 
             m_gameObjects.push_back(factory.CreatePlanet(this));
-
-            Material* pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
-            m_gameObjects[index]->GetComponent<RenderComponent>(k_renderComponentID)->Init("suzanne.obj", pMaterial);
+            m_gameObjects[index]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
 
             float x = (float)(i * k_positionOffset);
             float y = (float)(j * k_positionOffset);

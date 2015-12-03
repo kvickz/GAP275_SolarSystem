@@ -22,14 +22,7 @@ RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject, Transf
 
 RenderComponent::~RenderComponent()
 {
-    //TODO: Safe delete
-    delete m_pMesh;
-    m_pMesh = nullptr;
-
-    //TODO: This shouldn't be deleted by the render component
-    //      I need some kind of separate manager to handle shared materials
-    delete m_pMaterial;
-    m_pMaterial = nullptr;
+    //
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -44,12 +37,46 @@ void RenderComponent::Init()
 //-------------------------------------------------------------------------------------- -
 //  Render Component Initialization Function
 //      -Allows you to set the mesh and material of this component
+//      -This version of init requires you to have a preloaded Mesh
+//       but is far more efficient.
+//      -**Note** Render component is not responsible for deleting mesh assets.
+//      -**This is the recommended version of Init to use.**
 //-------------------------------------------------------------------------------------- -
-void RenderComponent::Init(const char* fileName, Material* pMaterial)
+void RenderComponent::Init(Mesh* pMesh, Material* pMaterial)
+{
+    m_pMesh = pMesh;
+    LoadMaterial(pMaterial);
+    CreateProgram();
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Render Component Initialization Function
+//      -Allows you to set the mesh and material of this component
+//      -**Warning** This can be extremely inefficient if called multiple times
+//       use the overloaded Init(Mesh* pMesh, Material* pMaterial); to avoid
+//       loading multiple duplicate meshes
+//      -This init function should generally be avoided because you
+//       must delete the mesh loaded from the caller, the mesh will
+//       NOT be deleted by this render component. The function is
+//       provided for convenience and testing purposes.
+//-------------------------------------------------------------------------------------- -
+Mesh* RenderComponent::Init(const char* fileName, Material* pMaterial)
 {
     LoadMeshFromFile(fileName);
     LoadMaterial(pMaterial);
     CreateProgram();
+
+    return m_pMesh;
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Set Mesh Function
+//      -Sets the mesh using a pointer
+//      -**Note** Render component is not responsible for deleting mesh assets.
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::SetMesh(Mesh* pMesh)
+{
+    m_pMesh = pMesh;
 }
 
 //-------------------------------------------------------------------------------------- -

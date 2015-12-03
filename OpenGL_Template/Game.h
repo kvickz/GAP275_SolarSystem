@@ -9,6 +9,7 @@
 #include <cml/cml.h>
 
 class Renderer;
+class AssetManager;
 class InputManager;
 class GameObject;
 class Time;
@@ -16,7 +17,7 @@ class Time;
 typedef unsigned int GLuint;
 typedef int GLint;
 
-class RenderComponent;
+//class RenderComponent;
 
 class Game
 {
@@ -28,6 +29,7 @@ private:
     GameObject* m_pCamera;
 
     Renderer* m_pRenderer;
+    AssetManager* m_pAssetManager;
     InputManager* m_pInputManager;
     Time* m_pTime;
 

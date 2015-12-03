@@ -37,8 +37,10 @@ public:
     virtual void Init() override;
     virtual void Update() override;
 
-    void Init(const char* fileName, Material* pMaterial);
+    Mesh* Init(const char* fileName, Material* pMaterial);
+    void Init(Mesh* pMesh, Material* pMaterial);
     void LoadMeshFromFile(const char* const fileName);
+    void SetMesh(Mesh* pMesh);
     void LoadMaterial(Material* const pMaterial);
     void CreateProgram();
     void Draw();

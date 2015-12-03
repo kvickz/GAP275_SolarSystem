@@ -40,6 +40,9 @@ void Renderer::Init()
     glewExperimental = GL_TRUE;
     unsigned int debug = glewInit();
 
+    //Setting clear color
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
     //Setting polygon mode
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
@@ -63,7 +66,6 @@ void Renderer::Shutdown()
 
 void Renderer::ClearScreen()
 {
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 

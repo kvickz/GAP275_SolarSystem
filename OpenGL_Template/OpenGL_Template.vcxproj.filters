@@ -34,12 +34,6 @@
     <ClCompile Include="GameObjectComponentFactory.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>GameObject\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>GameObject\Components</Filter>
-    </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
@@ -54,6 +48,15 @@
     </ClCompile>
     <ClCompile Include="Time.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Assets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,12 +90,6 @@
     <ClInclude Include="RenderComponent.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>GameObject\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>GameObject\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Enums.h">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -114,21 +111,27 @@
     <ClInclude Include="Time.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShader.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Assets\Shaders</Filter>
     </None>
     <None Include="VertexShader.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Assets\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
       <UniqueIdentifier>{7503324c-c0d7-4a7c-add8-a60a22f76336}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{56875c97-73b7-4beb-8b1b-5c995b344d00}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{f12afab2-adb5-43b2-8fcd-26e8cd087f4e}</UniqueIdentifier>
@@ -141,6 +144,12 @@
     </Filter>
     <Filter Include="CommandPattern">
       <UniqueIdentifier>{1c8f8f01-ce9d-4017-b82c-67c5dc41f94c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{8ac65065-7f6b-4eab-913c-d82fb978bdf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders">
+      <UniqueIdentifier>{56875c97-73b7-4beb-8b1b-5c995b344d00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
