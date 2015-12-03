@@ -73,13 +73,13 @@ void Game::Init()
 #include "TransformComponent.h"
 #include "Mesh.h"
 
-const int k_numOfSpheres = 4;
+const int k_numOfSpheres = 2;
 const int k_positionOffset = 4;
 
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
-    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("hello.obj");
+    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("sphere.obj");
     Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
 
     //Creating a grid of objects
@@ -158,6 +158,7 @@ int Game::Update()
 //-------------------------------------------------------------------------------------- -
 void Game::UpdateGameLogic()
 {
+    /*
     float sinVal = sinf(SDL_GetTicks() * 0.001f);
 
     for (int j = 0; j < k_numOfSpheres; ++j)
@@ -172,6 +173,7 @@ void Game::UpdateGameLogic()
             m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
         }
     }
+    */
 }
 
 //-------------------------------------------------------------------------------------- -

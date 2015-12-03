@@ -24,11 +24,11 @@ void TransformComponent::Update()
 
     m_position.x += sinVal * 0.01f;*/
 
-    //m_eulerRotation.y += 0.01f;
+    m_eulerRotation.y += 0.01f;
     //m_eulerRotation.z += 0.01f;
 
-    const float k_factor = 0.04f;
-    Scale(k_factor, k_factor, k_factor);
+    //const float k_factor = 0.04f;
+    //Scale(k_factor, k_factor, k_factor);
 }
 
 //POSITION
