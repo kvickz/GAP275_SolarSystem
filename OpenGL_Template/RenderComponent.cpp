@@ -14,10 +14,13 @@ RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject, Transf
     :GameObjectComponent(id, pGameObject, pTransform)
     , m_pMesh(nullptr)
     , m_pMaterial(nullptr)
-    , m_elapsedTime(0)
 {
     //Initialize to 1, 1, 1
     m_transformMatrixPair.first.identity();
+
+    m_pScaleReference = m_pGameObject->GetTransformComponent()->GetScalePointer();
+    m_translationReference = m_pGameObject->GetTransformComponent()->GetPositionRef();
+    m_rotationReference = m_pGameObject->GetTransformComponent()->GetRotationRef();
 }
 
 RenderComponent::~RenderComponent()
@@ -111,26 +114,40 @@ void RenderComponent::Draw()
 //-------------------------------------------------------------------------------------- -
 void RenderComponent::Update()
 {
-    //This logic sets the translation and rotation of the drawn image
-    float sinVal = sinf(SDL_GetTicks() * 0.001f);
-
-    //Rotation and translation of the object
+    //Declare matrices
     cml::matrix44f_c objectRotation;
     cml::matrix44f_c objectTranslation;
+    cml::matrix44f_c objectScale;
 
     objectRotation.identity();
-    cml::matrix_rotate_about_local_y(objectRotation, (SDL_GetTicks() * 0.001f));
+
+    //float xRot = m_pGameObject->GetTransformComponent()->GetRotation().x;
+    //float yRot = m_pGameObject->GetTransformComponent()->GetRotation().y;
+    //float zRot = m_pGameObject->GetTransformComponent()->GetRotation().z;
 
     //cml::matrix_rotate_about_local_axis()
     //cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
 
-    float x = m_pGameObject->GetTransformComponent()->GetPosition().x;
-    float y = m_pGameObject->GetTransformComponent()->GetPosition().y;
-    float z = m_pGameObject->GetTransformComponent()->GetPosition().z;
+    //Vector3 translationVec = m_pGameObject->GetTransformComponent()->GetPosition();
+    //float x = m_pGameObject->GetTransformComponent()->GetPosition().x;
+    //float y = m_pGameObject->GetTransformComponent()->GetPosition().y;
+    //float z = m_pGameObject->GetTransformComponent()->GetPosition().z;
+    
+    //cml::matrix_translation(objectTranslation, x, y, z);
 
-    cml::matrix_translation(objectTranslation, x, y, z);
+    //Scale
+    cml::matrix_scale(objectScale, m_pScaleReference->x, m_pScaleReference->y, m_pScaleReference->z);
 
-    m_transformMatrixPair.first = (objectTranslation * objectRotation);
+    //Rotate
+    cml::matrix_rotate_about_local_x(objectRotation, m_rotationReference->x);
+    cml::matrix_rotate_about_local_y(objectRotation, m_rotationReference->y);
+    cml::matrix_rotate_about_local_z(objectRotation, m_rotationReference->z);
+
+    //Translate
+    cml::matrix_translation(objectTranslation, m_translationReference->x, m_translationReference->y, m_translationReference->z);
+
+    //Multiply Matrices
+    m_transformMatrixPair.first = (objectTranslation * objectRotation* objectScale);
 
     //** Draw! **//
     Draw();

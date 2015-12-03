@@ -6,6 +6,7 @@
 #include "GameObjectComponent.h"
 
 #include "Enums.h"
+#include "Vector3.h"
 
 #include <cml/cml.h>
 
@@ -21,14 +22,15 @@ class RenderComponent : public GameObjectComponent
     Mesh* m_pMesh;
     Material* m_pMaterial;
 
+    Vector3* m_translationReference;
+    Vector3* m_rotationReference;
+    Vector3* m_pScaleReference;
+
     TransformMatrixPair m_transformMatrixPair;
     GLint m_viewMatrixUniform;
     GLint m_projectionMatrixUniform;
 
     GLuint m_shaderProgram;
-
-    //TODO: Refactor, get a handle to Game's elapsed time var
-    int m_elapsedTime = 0;
 
 public:
     RenderComponent(const ComponentID id, GameObject* pGameObject, TransformComponent* pTransform);
