@@ -7,6 +7,7 @@
 #include "Constants.h"
 
 #include "CameraMoveCommand.h"
+#include "CameraRotateCommand.h"
 
 #include "TransformComponent.h"
 
@@ -17,6 +18,9 @@
 //-------------------------------------------------------------------------------------- -
 InputManager::InputManager(Game* pGame)
     :m_pGame(pGame)
+    , k_mouseSensitivity(100000)
+    , m_mouseXInverted(false)
+    , m_mouseYInverted(false)
 {
     m_pKeyboardCommands = new KeyboardCommands();
     m_pControllerCommands = new ControllerCommands();
@@ -43,6 +47,7 @@ InputManager::~InputManager()
 InputManager::KeyboardCommands::~KeyboardCommands()
 {
     delete axis_XYZ;
+    delete axis_XYZ_rotation;
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -68,6 +73,7 @@ void InputManager::AddPlayer(unsigned int playerIndex, GameObject* pGameObject)
     //[???] Why doesn't this work with a static_cast like in my GameObject::GetComponent?
     CameraComponent* pCamComponent = pGameObject->GetComponentReinterpret<CameraComponent>(k_cameraComponentID);
     m_pKeyboardCommands->axis_XYZ = new CameraMoveCommand(pGameObject, pCamComponent);
+    m_pKeyboardCommands->axis_XYZ_rotation = new CameraRotateCommand(pGameObject, pCamComponent);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -130,6 +136,18 @@ int InputManager::HandleEvents()
             {
                 m_EKey_Pressed = true;
             }
+
+            //R key
+            if (appEvent.key.keysym.sym == SDLK_r)
+            {
+                m_RKey_Pressed = true;
+            }
+
+            //F key
+            if (appEvent.key.keysym.sym == SDLK_f)
+            {
+                m_FKey_Pressed = true;
+            }
         }
 
         //KEY UP EVENTS
@@ -170,14 +188,70 @@ int InputManager::HandleEvents()
             {
                 m_EKey_Pressed = false;
             }
+
+            //R key
+            if (appEvent.key.keysym.sym == SDLK_r)
+            {
+                m_RKey_Pressed = false;
+            }
+
+            //F key
+            if (appEvent.key.keysym.sym == SDLK_f)
+            {
+                m_FKey_Pressed = false;
+            }
         }
         //-------------------------
         // END OF KEY HANDLING
         //-------------------------
+
+        //-------------------------
+        // MOUSE EVENTS
+        //-------------------------
+
+        if (appEvent.type == SDL_MOUSEBUTTONDOWN)
+        {
+            if (appEvent.button.button == SDL_BUTTON_LEFT)
+            {
+                //Store the last clicked position for mouse drags
+                m_lastClickedMousePosition_Left.x = appEvent.button.x;
+                m_lastClickedMousePosition_Left.y = appEvent.button.y;
+
+                m_leftMouse_Pressed = true;
+            }
+            else if (appEvent.button.button == SDL_BUTTON_RIGHT)
+            {
+                m_lastClickedMousePosition_Right.x = appEvent.button.x;
+                m_lastClickedMousePosition_Right.y = appEvent.button.y;
+
+                m_rightMouse_Pressed = true;
+            }
+        }
+
+        if (appEvent.type == SDL_MOUSEBUTTONUP)
+        {
+            if (appEvent.button.button == SDL_BUTTON_LEFT)
+            {
+                m_leftMouse_Pressed = false;
+            }
+            else if (appEvent.button.button == SDL_BUTTON_RIGHT)
+            {
+                m_rightMouse_Pressed = false;
+            }
+        }
+
+        //Gathers mouse x and y
+        m_currentMousePosition.x = appEvent.button.x;
+        m_currentMousePosition.y = appEvent.button.y;
     }
 
     //Applies held down key logic
     ApplyKeyboardInput();
+    ApplyMouseInput();
+
+    //Execute Command Objects
+    m_pKeyboardCommands->axis_XYZ->Execute();
+    m_pKeyboardCommands->axis_XYZ_rotation->Execute();
 
     return 1;   //SUCCESS
 }
@@ -224,7 +298,59 @@ void InputManager::ApplyKeyboardInput()
         m_pKeyboardCommands->axis_XYZ->SetAxisZValue(k_maxIntValue);
     }
 
-    m_pKeyboardCommands->axis_XYZ->Execute();
+    // R KEY
+    if (m_RKey_Pressed)
+    {
+        m_pKeyboardCommands->axis_XYZ_rotation->SetAxisXValue(k_maxIntValue);
+    }
+
+    // F KEY
+    if (m_FKey_Pressed)
+    {
+        m_pKeyboardCommands->axis_XYZ_rotation->SetAxisXValue(-k_maxIntValue);
+    }
+
+    
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Apply Keyboard Input
+//      -This applies the logic from held down keys
+//-------------------------------------------------------------------------------------- -
+#include "Utility.h"
+
+void InputManager::ApplyMouseInput()
+{
+    if (m_leftMouse_Pressed)
+    {
+        //
+    }
+
+    if (m_rightMouse_Pressed)
+    {
+        //Calculate offset
+        m_mouseDragOffset_Right.x = m_currentMousePosition.x - m_lastClickedMousePosition_Right.x;
+        m_mouseDragOffset_Right.y = m_currentMousePosition.y - m_lastClickedMousePosition_Right.y;
+
+        //Multiply by mouse sensitivity
+        int xRotation = -k_mouseSensitivity * m_mouseDragOffset_Right.y;
+        int yRotation = -k_mouseSensitivity * m_mouseDragOffset_Right.x;
+
+        //Check if user wants inverted controls
+        if (m_mouseXInverted)
+            yRotation *= -1;
+
+        if (m_mouseYInverted)
+            xRotation *= -1;
+
+        //Clamp the rotation value
+        Utility::Clamp(xRotation, INT_MIN, INT_MAX);
+
+        //Vertical Rotation
+        m_pKeyboardCommands->axis_XYZ_rotation->SetAxisXValue(xRotation);
+        //Horizontal Rotation
+        m_pKeyboardCommands->axis_XYZ_rotation->SetAxisYValue(yRotation);
+    }
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -235,8 +361,7 @@ void InputManager::ApplyKeyboardInput()
 //-------------------------------------------------------------------------------------- -
 void InputManager::ResetUpdateVariables()
 {
-    //Default keyboard axis to zero
-    m_pKeyboardCommands->axis_XYZ->SetAxisXValue(0);
-    m_pKeyboardCommands->axis_XYZ->SetAxisYValue(0);
-    m_pKeyboardCommands->axis_XYZ->SetAxisZValue(0);
+    //Default axes to zero
+    m_pKeyboardCommands->axis_XYZ->ResetAxisValues();
+    m_pKeyboardCommands->axis_XYZ_rotation->ResetAxisValues();
 }

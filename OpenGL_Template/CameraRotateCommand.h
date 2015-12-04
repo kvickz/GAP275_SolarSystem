@@ -1,13 +1,13 @@
-//CameraMoveCommand.h
+//CameraRotateCommand.h
 
-#ifndef CAMERAMOVECOMMAND_H
-#define CAMERAMOVECOMMAND_H
+#ifndef CAMERAROTATECOMMAND_H
+#define CAMERAROTATECOMMAND_H
 
 #include "Command.h"
 
 class CameraComponent;
 
-class CameraMoveCommand : public Command
+class CameraRotateCommand : public Command
 {
 private:
     const AxisValue k_maxStickInputValue = 0x7fffffff;
@@ -16,11 +16,11 @@ private:
     AxisValue m_yAxis;
     AxisValue m_zAxis;
 
-    CameraComponent* const m_pCameraComponent;  //TODO: Figure out case for if component gets deleted
+    CameraComponent* m_pCameraComponent;
 
 public:
-    CameraMoveCommand(GameObject* const pGameObject, CameraComponent* const pCameraComponent);
-    ~CameraMoveCommand();
+    CameraRotateCommand(GameObject* pGameObject, CameraComponent* pCameraComponent);
+    ~CameraRotateCommand();
 
     virtual void Execute() override;
     virtual void SetAxisXValue(AxisValue value) override { m_xAxis = value; }
@@ -29,4 +29,4 @@ public:
     virtual void ResetAxisValues() override;
 };
 
-#endif // !MOVECOMMAND_H
+#endif // !CAMERAROTATECOMMAND_H

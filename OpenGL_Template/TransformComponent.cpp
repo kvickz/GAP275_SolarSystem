@@ -21,10 +21,9 @@ TransformComponent::~TransformComponent()
 void TransformComponent::Update()
 {
     /*float sinVal = sinf(SDL_GetTicks() * 0.0001f) + m_position.x;
-
     m_position.x += sinVal * 0.01f;*/
 
-    m_eulerRotation.y += 0.01f;
+    //m_eulerRotation.y += 0.01f;
     //m_eulerRotation.z += 0.01f;
 
     //const float k_factor = 0.04f;

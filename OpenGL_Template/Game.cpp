@@ -79,7 +79,7 @@ const int k_positionOffset = 4;
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
-    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("sphere.obj");
+    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("Sphere.obj");
     Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
 
     //Creating a grid of objects

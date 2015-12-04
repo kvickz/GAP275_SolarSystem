@@ -17,16 +17,21 @@ CameraComponent::CameraComponent(const ComponentID id, GameObject* pGameObject, 
     , m_nearClippingPlane(0.1f)
     , m_fieldOfView(70.f)
     , m_moveSpeed(0.02f)
+    , m_rotationSpeed(0.02f)
 {
     m_viewMatrix.identity();
     m_projectionMatrix.identity();
 
     m_aspectRatio = pRenderer->GetAspectRatio();
+
+    m_pTransformPosition = m_pTransform->GetPositionPointer();
+    m_pTransformRotation = m_pTransform->GetRotationPointer();
 }
 
 CameraComponent::~CameraComponent()
 {
-    //
+    m_pTransformPosition = nullptr;
+    m_pTransformRotation = nullptr;
 }
 
 void CameraComponent::Init()
@@ -48,19 +53,42 @@ void CameraComponent::Update()
     //Get Delta time
     int deltaTime = m_pTime->GetDeltaTime();
 
+    //---------------------------------------------------------------------------------- -
+    //  Modifying m_pTransform
+    //---------------------------------------------------------------------------------- -
     //Update Velocity
     m_velocity.SetValue(m_moveSpeed * m_moveScale.x * deltaTime
-                   , m_moveSpeed * m_moveScale.y * deltaTime
-                   , m_moveSpeed * m_moveScale.z * deltaTime);
+                        , m_moveSpeed * m_moveScale.y * deltaTime
+                        , m_moveSpeed * m_moveScale.z * deltaTime);
 
-    //Update Position
+    //Update Rotational Velocity
+    m_rotationalVelocity.SetValue(m_rotationSpeed * m_rotationScale.x * deltaTime
+                                  , m_rotationSpeed* m_rotationScale.y * deltaTime
+                                  , m_rotationSpeed * m_rotationScale.z * deltaTime);
+
+    //Update Position & Rotation inside transform component
     m_pTransform->Translate(m_velocity.x, m_velocity.y, m_velocity.z);
+    m_pTransform->Rotate(m_rotationalVelocity.x, m_rotationalVelocity.y, m_rotationalVelocity.z);
+
+    //---------------------------------------------------------------------------------- -
+    //  Modifying the camera with modified transform component
+    //---------------------------------------------------------------------------------- -
 
     //Set camera position and target
-    cml::vector3f cameraDirection(0.f, 0.f, -1.f);
-    cml::vector3f cameraPosition(m_pTransform->GetPosition().x
-                                 , m_pTransform->GetPosition().y
-                                 , m_pTransform->GetPosition().z);
+    cml::matrix44f_c cameraRotationMatrix;
+    cml::matrix_rotation_euler(cameraRotationMatrix
+                               , m_pTransformRotation->x
+                               , m_pTransformRotation->y
+                               , m_pTransformRotation->z
+                               , cml::EulerOrder::euler_order_xyz);
+
+    cml::vector4f cameraForward(0.f, 0.f, -1.f, 0.f);
+    cml::vector3f cameraDirection = (cameraRotationMatrix * cameraForward).subvector(3);
+
+    //Setting Camera Position
+    cml::vector3f cameraPosition(m_pTransformPosition->x
+                                 , m_pTransformPosition->y
+                                 , m_pTransformPosition->z);
 
     //Setting Rotation
     cml::matrix_look_at_RH(m_viewMatrix
@@ -69,6 +97,9 @@ void CameraComponent::Update()
                            , cml::vector3f(0.f, 1.f, 0.f));         //Up-Direction, Y is up
 }
 
+//-------------------------------------------------------------------------------- -
+// Setting Movement Scale
+//-------------------------------------------------------------------------------- -
 void CameraComponent::SetMovementScaleX(float value)
 {
     m_moveScale.x = value;
@@ -82,4 +113,22 @@ void CameraComponent::SetMovementScaleY(float value)
 void CameraComponent::SetMovementScaleZ(float value)
 {
     m_moveScale.z = value;
+}
+
+//-------------------------------------------------------------------------------- -
+// Setting Rotation Scale
+//-------------------------------------------------------------------------------- -
+void CameraComponent::SetRotationScaleX(float value)
+{
+    m_rotationScale.x = value;
+}
+
+void CameraComponent::SetRotationScaleY(float value)
+{
+    m_rotationScale.y = value;
+}
+
+void CameraComponent::SetRotationScaleZ(float value)
+{
+    m_rotationScale.z = value;
 }

@@ -22,13 +22,13 @@ public:
 
     //Position
     Vector3 GetPosition() { return m_position; }
-    Vector3* GetPositionRef() { return &m_position; }
+    Vector3* GetPositionPointer() { return &m_position; }
     void SetPosition(float x, float y, float z);
     void Translate(float x, float y, float z);
 
     //Rotation
     Vector3 GetRotation() { return m_eulerRotation; }
-    Vector3* GetRotationRef() { return &m_eulerRotation; }
+    Vector3* GetRotationPointer() { return &m_eulerRotation; }
     void SetEulerRotation(float x, float y, float z);
     void Rotate(float x, float y, float z);
 

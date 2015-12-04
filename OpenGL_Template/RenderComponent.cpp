@@ -19,8 +19,8 @@ RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject, Transf
     m_transformMatrixPair.first.identity();
 
     m_pScaleReference = m_pGameObject->GetTransformComponent()->GetScalePointer();
-    m_translationReference = m_pGameObject->GetTransformComponent()->GetPositionRef();
-    m_rotationReference = m_pGameObject->GetTransformComponent()->GetRotationRef();
+    m_translationReference = m_pGameObject->GetTransformComponent()->GetPositionPointer();
+    m_rotationReference = m_pGameObject->GetTransformComponent()->GetRotationPointer();
 }
 
 RenderComponent::~RenderComponent()
@@ -119,21 +119,8 @@ void RenderComponent::Update()
     cml::matrix44f_c objectTranslation;
     cml::matrix44f_c objectScale;
 
+    //Set rotation to 1, 1, 1
     objectRotation.identity();
-
-    //float xRot = m_pGameObject->GetTransformComponent()->GetRotation().x;
-    //float yRot = m_pGameObject->GetTransformComponent()->GetRotation().y;
-    //float zRot = m_pGameObject->GetTransformComponent()->GetRotation().z;
-
-    //cml::matrix_rotate_about_local_axis()
-    //cml::matrix_translation(objectTranslation, 0.f, (sinVal * 0.05f), -2.f);
-
-    //Vector3 translationVec = m_pGameObject->GetTransformComponent()->GetPosition();
-    //float x = m_pGameObject->GetTransformComponent()->GetPosition().x;
-    //float y = m_pGameObject->GetTransformComponent()->GetPosition().y;
-    //float z = m_pGameObject->GetTransformComponent()->GetPosition().z;
-    
-    //cml::matrix_translation(objectTranslation, x, y, z);
 
     //Scale
     cml::matrix_scale(objectScale, m_pScaleReference->x, m_pScaleReference->y, m_pScaleReference->z);

@@ -1,22 +1,22 @@
-//CameraMoveCommand.cpp
+//CameraRotateCommand.cpp
 
-#include "CameraMoveCommand.h"
+#include "CameraRotateCommand.h"
 
 #include "CameraComponent.h"
 
-CameraMoveCommand::CameraMoveCommand(GameObject* const pGameObject, CameraComponent* const pCameraComponent)
+CameraRotateCommand::CameraRotateCommand(GameObject* pGameObject, CameraComponent* pCameraComponent)
     :Command(pGameObject)
     , m_pCameraComponent(pCameraComponent)
 {
     //
 }
 
-CameraMoveCommand::~CameraMoveCommand()
+CameraRotateCommand::~CameraRotateCommand()
 {
-    //
+    m_pCameraComponent = nullptr;
 }
 
-void CameraMoveCommand::Execute()
+void CameraRotateCommand::Execute()
 {
     //Returns value from -1.0 to 1.0
     float valueX = (float)m_xAxis / (float)k_maxStickInputValue;
@@ -35,15 +35,15 @@ void CameraMoveCommand::Execute()
 
     //Left stick Y
     if (m_zAxis < k_deadZoneRange && m_zAxis > -k_deadZoneRange)
-        valueZ = 0;    
+        valueZ = 0;
 
     //Calling the component
-    m_pCameraComponent->SetMovementScaleX(valueX);
-    m_pCameraComponent->SetMovementScaleY(valueY);
-    m_pCameraComponent->SetMovementScaleZ(valueZ);
+    m_pCameraComponent->SetRotationScaleX(valueX);
+    m_pCameraComponent->SetRotationScaleY(valueY);
+    m_pCameraComponent->SetRotationScaleZ(valueZ);
 }
 
-void CameraMoveCommand::ResetAxisValues()
+void CameraRotateCommand::ResetAxisValues()
 {
     m_xAxis = 0;
     m_yAxis = 0;
