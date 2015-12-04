@@ -7,9 +7,14 @@
 
 #include "Vector3.h"
 
+#include <vector>
+
 class TransformComponent : public GameObjectComponent
 {
 private:
+    TransformComponent* m_pParent;
+    std::vector<TransformComponent*> m_children;
+
     Vector3 m_position;
     Vector3 m_eulerRotation;
     Vector3 m_scale;
@@ -20,14 +25,20 @@ public:
 
     virtual void Update() override;
 
+    void SetParent(TransformComponent* const pTransform);
+    void AddChild(TransformComponent* const pTransform);
+    TransformComponent* GetChild(const unsigned int index);
+
     //Position
     Vector3 GetPosition() { return m_position; }
+    Vector3 GetWorldPosition();
     Vector3* GetPositionPointer() { return &m_position; }
     void SetPosition(float x, float y, float z);
     void Translate(float x, float y, float z);
 
     //Rotation
     Vector3 GetRotation() { return m_eulerRotation; }
+    Vector3 GetWorldRotation();
     Vector3* GetRotationPointer() { return &m_eulerRotation; }
     void SetEulerRotation(float x, float y, float z);
     void Rotate(float x, float y, float z);

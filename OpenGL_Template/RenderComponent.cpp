@@ -126,15 +126,32 @@ void RenderComponent::Update()
     cml::matrix_scale(objectScale, m_pScaleReference->x, m_pScaleReference->y, m_pScaleReference->z);
 
     //Rotate
+    /*
     cml::matrix_rotate_about_local_x(objectRotation, m_rotationReference->x);
     cml::matrix_rotate_about_local_y(objectRotation, m_rotationReference->y);
     cml::matrix_rotate_about_local_z(objectRotation, m_rotationReference->z);
+    */
+    Vector3 worldRot = m_pTransform->GetWorldRotation();
+    worldRot.Zero();
+    /*cml::matrix_rotate_about_local_x(objectRotation, worldRot.x);
+    cml::matrix_rotate_about_local_y(objectRotation, worldRot.y);
+    cml::matrix_rotate_about_local_z(objectRotation, worldRot.z);*/
+    cml::matrix_rotation_euler(objectRotation, worldRot.x, worldRot.y, worldRot.z, cml::euler_order_xyz);
+    //cml::matrix_rotation_
 
     //Translate
-    cml::matrix_translation(objectTranslation, m_translationReference->x, m_translationReference->y, m_translationReference->z);
+    //This one is efficient but only grabs local position
+    //cml::matrix_translation(objectTranslation, m_translationReference->x, m_translationReference->y, m_translationReference->z);
+
+    //This grabs world position, which is what it should but
+    //This lags unfortunately
+    cml::matrix_translation(objectTranslation
+                            , m_pTransform->GetWorldPosition().x
+                            , m_pTransform->GetWorldPosition().y
+                            , m_pTransform->GetWorldPosition().z);
 
     //Multiply Matrices
-    m_transformMatrixPair.first = (objectTranslation * objectRotation* objectScale);
+    m_transformMatrixPair.first = (objectTranslation * objectRotation * objectScale);
 
     //** Draw! **//
     Draw();

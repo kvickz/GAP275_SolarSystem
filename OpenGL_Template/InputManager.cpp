@@ -345,6 +345,7 @@ void InputManager::ApplyMouseInput()
 
         //Clamp the rotation value
         Utility::Clamp(xRotation, INT_MIN, INT_MAX);
+        Utility::Clamp(yRotation, INT_MIN, INT_MAX);
 
         //Vertical Rotation
         m_pKeyboardCommands->axis_XYZ_rotation->SetAxisXValue(xRotation);

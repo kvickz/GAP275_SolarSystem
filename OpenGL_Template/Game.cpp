@@ -73,7 +73,7 @@ void Game::Init()
 #include "TransformComponent.h"
 #include "Mesh.h"
 
-const int k_numOfSpheres = 2;
+const int k_numOfSpheres = 4;
 const int k_positionOffset = 4;
 
 void Game::CreateGameObjects()
@@ -94,11 +94,24 @@ void Game::CreateGameObjects()
 
             float x = (float)(i * k_positionOffset);
             float y = (float)(j * k_positionOffset);
+            //float x = 0;
+            //float y = 5;
             float z = -50.f;
             m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
         }
     }
     
+    //Testing parenting
+    for (int i = 0; i < (k_numOfSpheres * k_numOfSpheres) - 1; ++i)
+    {
+        m_gameObjects[i + 1]->GetTransformComponent()->SetParent(m_gameObjects[i]->GetTransformComponent());
+    }
+    /*
+    m_gameObjects[1]->GetTransformComponent()->SetParent(m_gameObjects[0]->GetTransformComponent());
+    m_gameObjects[2]->GetTransformComponent()->SetParent(m_gameObjects[1]->GetTransformComponent());
+    m_gameObjects[3]->GetTransformComponent()->SetParent(m_gameObjects[2]->GetTransformComponent());
+    */
+
     m_pCamera = factory.CreateCamera(this);
     m_pInputManager->AddPlayer(0, m_pCamera);
     m_gameObjects.push_back(m_pCamera);
@@ -158,9 +171,11 @@ int Game::Update()
 //-------------------------------------------------------------------------------------- -
 void Game::UpdateGameLogic()
 {
+    //float sinVal = sinf(SDL_GetTicks() * 0.0001f) * 0.5f;
+    //m_gameObjects[0]->GetTransformComponent()->Translate(sinVal, 0.f, 0.f);
+    //m_gameObjects[0]->GetTransformComponent()->Rotate(0.1f, 0.f, 0.f);
+    
     /*
-    float sinVal = sinf(SDL_GetTicks() * 0.001f);
-
     for (int j = 0; j < k_numOfSpheres; ++j)
     {
         for (int i = 0; i < k_numOfSpheres; ++i)

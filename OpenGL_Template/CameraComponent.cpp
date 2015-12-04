@@ -74,6 +74,8 @@ void CameraComponent::Update()
     //  Modifying the camera with modified transform component
     //---------------------------------------------------------------------------------- -
 
+    float xVal = m_pTransformRotation->x;
+
     //Set camera position and target
     cml::matrix44f_c cameraRotationMatrix;
     cml::matrix_rotation_euler(cameraRotationMatrix
