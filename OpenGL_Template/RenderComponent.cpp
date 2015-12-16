@@ -2,6 +2,7 @@
 
 #include "RenderComponent.h"
 #include "TransformComponent.h"
+#include "CameraComponent.h"
 #include "GameObject.h"
 #include "Game.h"
 
@@ -34,7 +35,8 @@ RenderComponent::~RenderComponent()
 //-------------------------------------------------------------------------------------- -
 void RenderComponent::Init()
 {
-    //
+    GameObject* pCamObject = m_pGameObject->GetGame()->GetCameraObject();
+    m_pCameraComponent = pCamObject->GetComponent<CameraComponent>(k_cameraComponentID);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -87,22 +89,25 @@ void RenderComponent::SetMesh(Mesh* pMesh)
 //      -Makes openGL calls to draw this object
 //-------------------------------------------------------------------------------------- -
 
-#include "CameraComponent.h"
-
 void RenderComponent::Draw()
 {
+    //Bind VAO
     glUseProgram(m_shaderProgram);
     glBindVertexArray(GetVAO());
 
-    GameObject* pCamObject = m_pGameObject->GetGame()->GetCameraObject();
-    CameraComponent* pCameraComponent = pCamObject->GetComponent<CameraComponent>(k_cameraComponentID);
-    cml::matrix44f_c cameraViewMatrix = pCameraComponent->GetViewMatrix();
-    cml::matrix44f_c cameraProjectionMatrix = pCameraComponent->GetProjectionMatrix();
+    //Get Transform, View, and Projection Matrices
+	//m_transformMatrixPair.first = m_pTransform->GetTransformMatrix();
+    m_transformMatrixPair.first = m_pTransform->GetWorldTransformMatrix();
+    cml::matrix44f_c cameraViewMatrix = m_pCameraComponent->GetViewMatrix();
+    cml::matrix44f_c cameraProjectionMatrix = m_pCameraComponent->GetProjectionMatrix();
 
-    glProgramUniformMatrix4fv(m_shaderProgram, GetTransformMatrixUniform(), 1, GL_FALSE, GetTransformMatrix().data());
-    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, cameraViewMatrix.data());
-    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, cameraProjectionMatrix.data());
+    //Calculate Transform, View, and Projection Matrices
+    cml::matrix44f_c transformViewProjectionMatrix = cameraProjectionMatrix * cameraViewMatrix * m_transformMatrixPair.first;
 
+    //Update matrix
+    glProgramUniformMatrix4fv(m_shaderProgram, m_transformViewProjectionMatrixUniform, 1, GL_FALSE, transformViewProjectionMatrix.data());
+
+    //Draw
     glDrawElements(GL_TRIANGLES, GetIndices().size(), GL_UNSIGNED_INT, &GetIndices()[0]);
 
     glBindVertexArray(0);
@@ -114,45 +119,6 @@ void RenderComponent::Draw()
 //-------------------------------------------------------------------------------------- -
 void RenderComponent::Update()
 {
-    //Declare matrices
-    cml::matrix44f_c objectRotation;
-    cml::matrix44f_c objectTranslation;
-    cml::matrix44f_c objectScale;
-
-    //Set rotation to 1, 1, 1
-    objectRotation.identity();
-
-    //Scale
-    cml::matrix_scale(objectScale, m_pScaleReference->x, m_pScaleReference->y, m_pScaleReference->z);
-
-    //Rotate
-    /*
-    cml::matrix_rotate_about_local_x(objectRotation, m_rotationReference->x);
-    cml::matrix_rotate_about_local_y(objectRotation, m_rotationReference->y);
-    cml::matrix_rotate_about_local_z(objectRotation, m_rotationReference->z);
-    */
-    Vector3 worldRot = m_pTransform->GetWorldRotation();
-    worldRot.Zero();
-    /*cml::matrix_rotate_about_local_x(objectRotation, worldRot.x);
-    cml::matrix_rotate_about_local_y(objectRotation, worldRot.y);
-    cml::matrix_rotate_about_local_z(objectRotation, worldRot.z);*/
-    cml::matrix_rotation_euler(objectRotation, worldRot.x, worldRot.y, worldRot.z, cml::euler_order_xyz);
-    //cml::matrix_rotation_
-
-    //Translate
-    //This one is efficient but only grabs local position
-    //cml::matrix_translation(objectTranslation, m_translationReference->x, m_translationReference->y, m_translationReference->z);
-
-    //This grabs world position, which is what it should but
-    //This lags unfortunately
-    cml::matrix_translation(objectTranslation
-                            , m_pTransform->GetWorldPosition().x
-                            , m_pTransform->GetWorldPosition().y
-                            , m_pTransform->GetWorldPosition().z);
-
-    //Multiply Matrices
-    m_transformMatrixPair.first = (objectTranslation * objectRotation * objectScale);
-
     //** Draw! **//
     Draw();
 }
@@ -194,10 +160,7 @@ void RenderComponent::CreateProgram()
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(posAttrib);
 
-    //TODO: Not sure where to put this just yet
-    m_transformMatrixPair.second = glGetUniformLocation(m_shaderProgram, "transformMatrix");
-    m_viewMatrixUniform = glGetUniformLocation(m_shaderProgram, "viewMatrix");
-    m_projectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "projectionMatrix");
+    m_transformViewProjectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformViewProjectionMatrix");
 
     glBindVertexArray(0);
 }

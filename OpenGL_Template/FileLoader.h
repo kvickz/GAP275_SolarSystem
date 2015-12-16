@@ -29,7 +29,8 @@ private:
     std::string m_fileSource;
 
 public:
-    bool Load(const char* fileName);
+    //bool Load(const char* fileName);
+	bool Load(std::string fileName);
     const char* GetSource() const
     {
         return m_fileSource.c_str();
@@ -47,7 +48,7 @@ private:
     std::vector<unsigned int> m_facesAsIndices;
 
 public:
-    bool Load(const char* fileName);
+	bool Load(std::string fileName);
     void RetrieveVertsFromFile();
     void RetrieveFacesFromFile();
 

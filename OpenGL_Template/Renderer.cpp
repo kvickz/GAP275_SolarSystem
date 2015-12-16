@@ -44,7 +44,7 @@ void Renderer::Init()
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
     //Setting polygon mode
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 //-------------------------------------------------------------------------------------- -

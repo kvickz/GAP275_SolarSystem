@@ -12,6 +12,7 @@
 
 class Mesh;
 class Material;
+class CameraComponent;
 
 typedef unsigned int GLuint;
 typedef int GLint;
@@ -31,6 +32,11 @@ class RenderComponent : public GameObjectComponent
     GLint m_projectionMatrixUniform;
 
     GLuint m_shaderProgram;
+
+    GLint m_transformViewProjectionMatrixUniform;
+
+    //TODO: Refactor to allow multiple cameras
+    CameraComponent* m_pCameraComponent;
 
 public:
     RenderComponent(const ComponentID id, GameObject* pGameObject, TransformComponent* pTransform);

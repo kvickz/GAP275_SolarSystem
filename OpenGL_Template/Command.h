@@ -19,7 +19,7 @@ public:
     virtual void SetAxisXValue(AxisValue value) {}
     virtual void SetAxisYValue(AxisValue value) {}
     virtual void SetAxisZValue(AxisValue value) {}
-    virtual void ResetAxisValues();
+	virtual void ResetAxisValues() {};
 };
 
 #endif // !COMMAND_H

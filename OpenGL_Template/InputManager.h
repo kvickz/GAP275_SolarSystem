@@ -55,6 +55,7 @@ private:
     bool m_mouseYInverted;
 
     Vector2_i m_currentMousePosition;
+    Vector2_i m_previousMousePosition;
     //Last clicked position
     Vector2_i m_lastClickedMousePosition_Left;
     Vector2_i m_lastClickedMousePosition_Right;

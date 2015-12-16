@@ -73,15 +73,18 @@ void Game::Init()
 #include "TransformComponent.h"
 #include "Mesh.h"
 
-const int k_numOfSpheres = 4;
-const int k_positionOffset = 4;
+const int k_numOfSpheres = 2;
+const int k_positionOffset = 2;
 
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
-    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("Sphere.obj");
+    Mesh* pSphereMesh = m_pAssetManager->LoadMesh("sphere.obj");
+	//Mesh* pSphereMesh = m_pAssetManager->LoadMesh("TurtleTris.obj");
     Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
 
+    
+	/*
     //Creating a grid of objects
     for (int j = 0; j < k_numOfSpheres; ++j)
     {
@@ -98,19 +101,47 @@ void Game::CreateGameObjects()
             //float y = 5;
             float z = -50.f;
             m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
+            //m_gameObjects[index]->GetTransformComponent()->SetPosition(0, 0, 0);
         }
     }
+    */
+
+	//OBJ1
+    m_gameObjects.push_back(factory.CreatePlanet(this));
+    m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
+    m_gameObjects[0]->GetTransformComponent()->SetPosition(0, 0, -50);
     
+	
+	//OBJ2
+	m_gameObjects.push_back(factory.CreatePlanet(this));
+	m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
+	m_gameObjects[1]->GetTransformComponent()->SetPosition(0, 0, 5);
+	float scaleFactor = 0.5f;
+	m_gameObjects[1]->GetTransformComponent()->SetScale(scaleFactor, scaleFactor, scaleFactor);
+
+	m_gameObjects[1]->GetTransformComponent()->SetEulerRotation(0, 1, 0);
+
+	//OBJ3
+	m_gameObjects.push_back(factory.CreatePlanet(this));
+	m_gameObjects[2]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
+	m_gameObjects[2]->GetTransformComponent()->SetPosition(0, 0, 3);
+	scaleFactor = 0.2f;
+	m_gameObjects[2]->GetTransformComponent()->SetScale(scaleFactor, scaleFactor, scaleFactor);
+	
+
+
     //Testing parenting
+    /*
     for (int i = 0; i < (k_numOfSpheres * k_numOfSpheres) - 1; ++i)
     {
         m_gameObjects[i + 1]->GetTransformComponent()->SetParent(m_gameObjects[i]->GetTransformComponent());
     }
-    /*
+    */
+
     m_gameObjects[1]->GetTransformComponent()->SetParent(m_gameObjects[0]->GetTransformComponent());
     m_gameObjects[2]->GetTransformComponent()->SetParent(m_gameObjects[1]->GetTransformComponent());
-    m_gameObjects[3]->GetTransformComponent()->SetParent(m_gameObjects[2]->GetTransformComponent());
-    */
+    //m_gameObjects[3]->GetTransformComponent()->SetParent(m_gameObjects[2]->GetTransformComponent());
+    
 
     m_pCamera = factory.CreateCamera(this);
     m_pInputManager->AddPlayer(0, m_pCamera);
@@ -154,7 +185,6 @@ int Game::Update()
     m_pRenderer->ClearScreen();
 
     //Updating objs
-    UpdateGameObjects();
     UpdateGameLogic();
 
     m_pRenderer->SwapWindow();
@@ -171,9 +201,12 @@ int Game::Update()
 //-------------------------------------------------------------------------------------- -
 void Game::UpdateGameLogic()
 {
-    //float sinVal = sinf(SDL_GetTicks() * 0.0001f) * 0.5f;
-    //m_gameObjects[0]->GetTransformComponent()->Translate(sinVal, 0.f, 0.f);
-    //m_gameObjects[0]->GetTransformComponent()->Rotate(0.1f, 0.f, 0.f);
+	UpdateGameObjects();
+
+    //float sinVal = sinf(SDL_GetTicks() * 0.01f) * 0.01f;
+	//m_gameObjects[0]->GetTransformComponent()->Translate(sinVal, 0.f, 0.f);
+	m_gameObjects[0]->GetTransformComponent()->Rotate(0.f, 0.01f, 0.f);
+	//m_gameObjects[1]->GetTransformComponent()->Rotate(0.f, 0.02f, 0.f);
     
     /*
     for (int j = 0; j < k_numOfSpheres; ++j)

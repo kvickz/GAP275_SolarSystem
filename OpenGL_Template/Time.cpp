@@ -4,15 +4,16 @@
 
 #include <SDL.h>
 
+int Time::s_deltaTime = 0;
+unsigned long Time::s_elapsedTicks = 0;
+
 Time::Time()
-    :m_deltaTime(0)
-    , m_elapsedTicks(0)
 {
     //
 }
 
 void Time::Update()
 {
-    m_deltaTime = SDL_GetTicks() - m_elapsedTicks;
-    m_elapsedTicks = SDL_GetTicks();
+    s_deltaTime = SDL_GetTicks() - s_elapsedTicks;
+    s_elapsedTicks = SDL_GetTicks();
 }

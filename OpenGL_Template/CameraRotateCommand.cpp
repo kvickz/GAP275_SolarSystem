@@ -38,9 +38,10 @@ void CameraRotateCommand::Execute()
         valueZ = 0;
 
     //Calling the component
-    m_pCameraComponent->SetRotationScaleX(valueX);
-    m_pCameraComponent->SetRotationScaleY(valueY);
-    m_pCameraComponent->SetRotationScaleZ(valueZ);
+
+    m_pCameraComponent->Pitch(valueX);
+    m_pCameraComponent->Yaw(valueY);
+    m_pCameraComponent->Roll(valueZ);
 }
 
 void CameraRotateCommand::ResetAxisValues()

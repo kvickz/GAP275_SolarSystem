@@ -16,8 +16,8 @@ CameraComponent::CameraComponent(const ComponentID id, GameObject* pGameObject, 
     , m_farClippingPlane(1000.f)
     , m_nearClippingPlane(0.1f)
     , m_fieldOfView(70.f)
-    , m_moveSpeed(0.02f)
-    , m_rotationSpeed(0.02f)
+    , m_moveSpeed(0.5f)
+    , m_rotationSpeed(8000.f)
 {
     m_viewMatrix.identity();
     m_projectionMatrix.identity();
@@ -26,6 +26,13 @@ CameraComponent::CameraComponent(const ComponentID id, GameObject* pGameObject, 
 
     m_pTransformPosition = m_pTransform->GetPositionPointer();
     m_pTransformRotation = m_pTransform->GetRotationPointer();
+
+    //josh's camera settings:
+    m_cameraForward.set(0.0, 0.0, -1.0);
+    m_cameraUp.set(0.0, 1.0, 0.0);
+    m_cameraRight = cml::cross(m_cameraForward, m_cameraUp);    //Perpendicular to forward & up, right handed-coordinate
+    m_cameraPosition.zero();
+    m_cameraTransform.identity();
 }
 
 CameraComponent::~CameraComponent()
@@ -53,6 +60,7 @@ void CameraComponent::Update()
     //Get Delta time
     int deltaTime = m_pTime->GetDeltaTime();
 
+    /*
     //---------------------------------------------------------------------------------- -
     //  Modifying m_pTransform
     //---------------------------------------------------------------------------------- -
@@ -74,8 +82,6 @@ void CameraComponent::Update()
     //  Modifying the camera with modified transform component
     //---------------------------------------------------------------------------------- -
 
-    float xVal = m_pTransformRotation->x;
-
     //Set camera position and target
     cml::matrix44f_c cameraRotationMatrix;
     cml::matrix_rotation_euler(cameraRotationMatrix
@@ -87,16 +93,24 @@ void CameraComponent::Update()
     cml::vector4f cameraForward(0.f, 0.f, -1.f, 0.f);
     cml::vector3f cameraDirection = (cameraRotationMatrix * cameraForward).subvector(3);
 
+    cml::vector4f cameraUpward(0.f, 1.f, 0.f, 0.f);
+    cml::vector3f cameraUpwardDirection = (cameraRotationMatrix * cameraUpward).subvector(3);
+
     //Setting Camera Position
     cml::vector3f cameraPosition(m_pTransformPosition->x
                                  , m_pTransformPosition->y
                                  , m_pTransformPosition->z);
-
+                                 */
+    /*
     //Setting Rotation
     cml::matrix_look_at_RH(m_viewMatrix
                            , cameraPosition                       //Origin
                            , cameraPosition + cameraDirection     //Direction
-                           , cml::vector3f(0.f, 1.f, 0.f));         //Up-Direction, Y is up
+                           //, cml::vector3f(0.f, 1.f, 0.f));         //Up-Direction, Y is up
+                           , cameraUpwardDirection);         //Up-Direction, Y is up
+
+                           */
+    //UpdateTransform();
 }
 
 //-------------------------------------------------------------------------------- -
@@ -133,4 +147,112 @@ void CameraComponent::SetRotationScaleY(float value)
 void CameraComponent::SetRotationScaleZ(float value)
 {
     m_rotationScale.z = value;
+}
+
+//-------------------------------------------------------------------------------- -
+// Yaw Pitch & Roll
+//-------------------------------------------------------------------------------- -
+
+void CameraComponent::Yaw(float degrees)
+{
+    //Creating yaw rotation marix from camUp & deltaDegrees
+    cml::matrix44f_c yawMatrix;
+    cml::matrix_rotation_axis_angle(yawMatrix, m_cameraUp, cml::rad(degrees * m_rotationSpeed));  
+
+    //Concatenating camForward with the rotated matrix
+    m_cameraForward = (yawMatrix * cml::vector4f(m_cameraForward, 0.0)).subvector(3);
+
+    //Getting forward unit vector
+    m_cameraForward.normalize();
+
+    //Getting the perpendicular angle with cross product
+    m_cameraRight = cml::cross(m_cameraForward, m_cameraUp);
+
+    //Getting right unit vector
+    m_cameraRight.normalize();
+
+
+    UpdateTransform();
+}
+
+void CameraComponent::Pitch(float degrees)
+{
+    //Creating pitch rotation matrix from m_camRight
+    cml::matrix44f_c pitchMatrix;
+    cml::matrix_rotation_axis_angle(pitchMatrix, m_cameraRight, cml::rad(degrees * m_rotationSpeed));
+
+    //The direction that the rotation turns in is in the direction of the inserted camera direction.
+    //Yaw is rotation on    Y axis    cameraUP
+    //Pitch is rotation on  X axis    cameraRIGHT
+    //Roll is rotation on   Z axis    cameraFORWARD
+
+    //Concatenating camForward with the rotated matrix
+    m_cameraForward = (pitchMatrix * cml::vector4f(m_cameraForward, 0.0)).subvector(3);
+
+    //Getting forward unit vector
+    m_cameraForward.normalize();
+
+
+    UpdateTransform();
+}
+
+void CameraComponent::Roll(float degrees)
+{
+    cml::matrix44f_c rollMatrix;
+    cml::matrix_rotation_axis_angle(rollMatrix, m_cameraForward, cml::rad(degrees * m_rotationSpeed));
+
+    //[???] This part is what im confused by, on the others as well
+    m_cameraRight = (rollMatrix * cml::vector4f(m_cameraRight, 0.0)).subvector(3);  //I dont really understand what determines this direction
+
+    //Get the right unit vector
+    m_cameraRight.normalize();
+
+    //Getting up direction from cross product or right & forward
+    m_cameraUp = cml::cross(m_cameraRight, m_cameraForward);
+    m_cameraUp.normalize();
+
+
+    UpdateTransform();
+}
+
+void CameraComponent::MoveForward(float distance)
+{
+    distance *= m_moveSpeed;
+    float x = m_cameraForward[0] * distance;
+    float y = m_cameraForward[1] * distance;
+    float z = m_cameraForward[2] * distance;
+
+    m_pTransformPosition->Add(x, y, z);
+
+    UpdateTransform();
+}
+
+void CameraComponent::MoveRight(float distance)
+{
+    distance *= m_moveSpeed;
+    float x = m_cameraRight[0] * distance;
+    float y = m_cameraRight[1] * distance;
+    float z = m_cameraRight[2] * distance;
+
+    m_pTransformPosition->Add(x, y, z);
+
+    UpdateTransform();
+}
+
+void CameraComponent::MoveUp(float distance)
+{
+    distance *= m_moveSpeed;
+    float x = m_cameraUp[0] * distance;
+    float y = m_cameraUp[1] * distance;
+    float z = m_cameraUp[2] * distance;
+
+    m_pTransformPosition->Add(x, y, z);
+
+    UpdateTransform();
+}
+
+void CameraComponent::UpdateTransform()
+{
+    cml::vector3f camPosition(m_pTransformPosition->x, m_pTransformPosition->y, m_pTransformPosition->z);
+    cml::matrix_look_at_RH(m_viewMatrix, camPosition, camPosition + m_cameraForward, m_cameraUp);
 }

@@ -6,15 +6,15 @@
 class Time
 {
 private:
-    int m_deltaTime;
-    unsigned long m_elapsedTicks;
+    static int s_deltaTime;
+    static unsigned long s_elapsedTicks;
 
 public:
     Time();
 
     void Update();
-    int GetDeltaTime() { return m_deltaTime; }
-    long GetElapsedTime() { return m_elapsedTicks; }
+    static int GetDeltaTime() { return s_deltaTime; }
+    static long GetElapsedTime() { return s_elapsedTicks; }
 };
 
 #endif // !TIME_H

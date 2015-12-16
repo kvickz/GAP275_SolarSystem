@@ -29,6 +29,7 @@ public:
     TransformComponent* GetTransform() { return m_pTransform; }
 
     ComponentID GetComponentID() { return m_componentID; }
+	GameObject* GetGameObject() { return m_pGameObject; }
 };
 
 #endif // !GAMEOBJECTCOMPONENT_H

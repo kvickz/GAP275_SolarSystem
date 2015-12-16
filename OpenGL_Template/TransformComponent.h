@@ -6,14 +6,18 @@
 #include "GameObjectComponent.h"
 
 #include "Vector3.h"
-
+#include <cml/cml.h>
 #include <vector>
+
+typedef int GLint;
 
 class TransformComponent : public GameObjectComponent
 {
 private:
     TransformComponent* m_pParent;
     std::vector<TransformComponent*> m_children;
+
+    cml::matrix44f_c m_transformMatrix;
 
     Vector3 m_position;
     Vector3 m_eulerRotation;
@@ -48,6 +52,13 @@ public:
     Vector3* GetScalePointer() { return &m_scale; }
     void SetScale(float x, float y, float z);
     void Scale(float x, float y, float z);
+
+    //Transform Matrix
+    cml::matrix44f_c GetTransformMatrix() const { return m_transformMatrix; }
+    cml::matrix44f_c GetWorldTransformMatrix() const;
+
+private:
+    void CalculateTransforMatrix();
 };
 
 #endif // !TRANSFORMCOMPONENT_H

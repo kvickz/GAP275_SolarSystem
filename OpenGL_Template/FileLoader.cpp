@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-bool ObjFile::Load(const char* fileName)
+bool ObjFile::Load(std::string fileName)
 {
     std::ifstream tempStream;
 
@@ -28,7 +28,6 @@ void ObjFile::RetrieveVertsFromFile()
     while (!tempStream.eof())
     {
         std::string currentLine;
-
         std::getline(tempStream, currentLine);
 
         //Continue until we hit vertices
@@ -199,7 +198,7 @@ std::vector<unsigned int>& ObjFile::GetFacesAsIndices()
     return m_facesAsIndices;
 }
 
-bool ShaderFile::Load(const char* fileName)
+bool ShaderFile::Load(std::string fileName)
 {
     std::ifstream tempStream;
     m_fileSource.clear();

@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include <math.h>
 
+#include "Time.h"
+
 TransformComponent::TransformComponent(ComponentID id, GameObject* pGameObject)
     :GameObjectComponent(id, pGameObject, this)
     , m_pParent(nullptr)
@@ -13,6 +15,7 @@ TransformComponent::TransformComponent(ComponentID id, GameObject* pGameObject)
     m_eulerRotation.Zero();
     m_scale.Identity();
 
+    m_transformMatrix.identity();
 }
 
 TransformComponent::~TransformComponent()
@@ -22,14 +25,38 @@ TransformComponent::~TransformComponent()
 
 void TransformComponent::Update()
 {
-    /*float sinVal = sinf(SDL_GetTicks() * 0.0001f) + m_position.x;
-    m_position.x += sinVal * 0.01f;*/
+    //Testing
+    //X and Y are messed up, Z works though
+    //Translate(Time::GetDeltaTime() * 0.001f, 0, 0);
+	//Rotate(0, Time::GetDeltaTime() * 0.0001f, 0);
 
-    //m_eulerRotation.y += 0.01f;
-    //m_eulerRotation.z += 0.01f;
+    CalculateTransforMatrix();
+}
 
-    //const float k_factor = 0.04f;
-    //Scale(k_factor, k_factor, k_factor);
+void TransformComponent::CalculateTransforMatrix()
+{
+    //[???] Something is moving the object around
+    //Declare matrices
+    cml::matrix44f_c objectScale;
+    cml::matrix44f_c objectRotation;
+    cml::matrix44f_c objectTranslation;
+
+    //Set rotation to 1, 1, 1
+    objectRotation.identity();
+    objectTranslation.identity();	//maybe should be zero?
+
+    //Scale
+    cml::matrix_scale(objectScale, m_scale.x, m_scale.y, m_scale.z);
+
+    //Rotate
+    cml::matrix_rotation_euler(objectRotation, m_eulerRotation.x, m_eulerRotation.y, m_eulerRotation.z, cml::euler_order_xyz);
+
+    //[???] It seems like this is returning the wrong matrix
+    //Translate
+    cml::matrix_translation(objectTranslation, m_position.x, m_position.y, m_position.z);
+
+    //Multiply Matrices
+    m_transformMatrix = (objectTranslation * objectRotation * objectScale);
 }
 
 //***************************************************************************************
@@ -53,6 +80,18 @@ void TransformComponent::AddChild(TransformComponent* pTransform)
 TransformComponent* TransformComponent::GetChild(const unsigned int index)
 {
     return m_children[index];
+}
+
+//***************************************************************************************
+// WORLD TRANSFORM MATRIX
+//***************************************************************************************
+//Recursive function which multiplies by all of its children
+cml::matrix44f_c TransformComponent::GetWorldTransformMatrix() const
+{
+    if (m_pParent)
+        return m_pParent->GetWorldTransformMatrix() * GetTransformMatrix();
+    else
+        return GetTransformMatrix();
 }
 
 //***************************************************************************************

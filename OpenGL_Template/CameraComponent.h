@@ -36,6 +36,13 @@ private:
     Renderer* m_pRenderer;
     Time* m_pTime;
 
+    //From josh's camera:
+    cml::vector3f m_cameraForward;
+    cml::vector3f m_cameraRight;
+    cml::vector3f m_cameraUp;
+    cml::vector3f m_cameraPosition;
+    cml::matrix44f_c m_cameraTransform;
+
 public:
     CameraComponent(const ComponentID id, GameObject* pGameObject, TransformComponent* pTransform, Renderer* pRenderer, Time* pTime);
     ~CameraComponent();
@@ -53,6 +60,18 @@ public:
     void SetRotationScaleX(float value);
     void SetRotationScaleY(float value);
     void SetRotationScaleZ(float value);
+
+    void MoveForward(float distance);
+    void MoveRight(float distance);
+    void MoveUp(float distance);
+
+    void Yaw(float degrees);
+    void Pitch(float degrees);
+    void Roll(float degrees);
+
+private:
+    void UpdateTransform();
+
 };
 
 #endif // !CAMERACOMPONENT_H

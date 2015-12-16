@@ -38,9 +38,15 @@ void CameraMoveCommand::Execute()
         valueZ = 0;    
 
     //Calling the component
+    /*
     m_pCameraComponent->SetMovementScaleX(valueX);
     m_pCameraComponent->SetMovementScaleY(valueY);
     m_pCameraComponent->SetMovementScaleZ(valueZ);
+    */
+
+    m_pCameraComponent->MoveRight(valueX);
+    m_pCameraComponent->MoveUp(valueY);
+    m_pCameraComponent->MoveForward(-valueZ);
 }
 
 void CameraMoveCommand::ResetAxisValues()

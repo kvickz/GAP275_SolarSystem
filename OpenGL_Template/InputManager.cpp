@@ -18,7 +18,7 @@
 //-------------------------------------------------------------------------------------- -
 InputManager::InputManager(Game* pGame)
     :m_pGame(pGame)
-    , k_mouseSensitivity(100000)
+    , k_mouseSensitivity(10000)
     , m_mouseXInverted(false)
     , m_mouseYInverted(false)
 {
@@ -240,9 +240,16 @@ int InputManager::HandleEvents()
             }
         }
 
-        //Gathers mouse x and y
-        m_currentMousePosition.x = appEvent.button.x;
-        m_currentMousePosition.y = appEvent.button.y;
+        if (appEvent.type == SDL_MOUSEMOTION)
+        {
+            //Assign previous mouse pos
+            m_previousMousePosition.x = m_currentMousePosition.x;
+            m_previousMousePosition.y = m_currentMousePosition.y;
+
+            //Gathers mouse x and y
+            m_currentMousePosition.x = appEvent.button.x;
+            m_currentMousePosition.y = appEvent.button.y;
+        }
     }
 
     //Applies held down key logic
@@ -329,13 +336,15 @@ void InputManager::ApplyMouseInput()
     if (m_rightMouse_Pressed)
     {
         //Calculate offset
-        m_mouseDragOffset_Right.x = m_currentMousePosition.x - m_lastClickedMousePosition_Right.x;
-        m_mouseDragOffset_Right.y = m_currentMousePosition.y - m_lastClickedMousePosition_Right.y;
+        //m_mouseDragOffset_Right.x = m_currentMousePosition.x - m_lastClickedMousePosition_Right.x;
+        //m_mouseDragOffset_Right.y = m_currentMousePosition.y - m_lastClickedMousePosition_Right.y;
+        m_mouseDragOffset_Right.x = m_currentMousePosition.x - m_previousMousePosition.x;
+        m_mouseDragOffset_Right.y = m_currentMousePosition.y - m_previousMousePosition.y;
 
         //Multiply by mouse sensitivity
         int xRotation = -k_mouseSensitivity * m_mouseDragOffset_Right.y;
         int yRotation = -k_mouseSensitivity * m_mouseDragOffset_Right.x;
-
+        
         //Check if user wants inverted controls
         if (m_mouseXInverted)
             yRotation *= -1;
@@ -349,6 +358,7 @@ void InputManager::ApplyMouseInput()
 
         //Vertical Rotation
         m_pKeyboardCommands->axis_XYZ_rotation->SetAxisXValue(xRotation);
+        
         //Horizontal Rotation
         m_pKeyboardCommands->axis_XYZ_rotation->SetAxisYValue(yRotation);
     }

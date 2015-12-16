@@ -46,9 +46,6 @@
     <ClCompile Include="CameraMoveCommand.cpp">
       <Filter>CommandPattern</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -62,6 +59,9 @@
       <Filter>CommandPattern</Filter>
     </ClCompile>
     <ClCompile Include="Vector2.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
