@@ -93,6 +93,7 @@ void RenderComponent::Draw()
 {
     //Bind VAO
     glUseProgram(m_shaderProgram);
+    GLuint vao = GetVAO();
     glBindVertexArray(GetVAO());
 
     //Get Transform, View, and Projection Matrices
@@ -102,10 +103,23 @@ void RenderComponent::Draw()
     cml::matrix44f_c cameraProjectionMatrix = m_pCameraComponent->GetProjectionMatrix();
 
     //Calculate Transform, View, and Projection Matrices
+    glProgramUniformMatrix4fv(m_shaderProgram, m_transformMatrixPair.second, 1, GL_FALSE, m_transformMatrixPair.first.data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, cameraViewMatrix.data());
+    glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, cameraProjectionMatrix.data());
+
+    /*
+    //TODO: Get Light position in world space
+    GLint aLoc = glGetUniformLocation(m_shaderProgram, "lightPosition");
+    glBindAttribLocation(m_shaderProgram, 0, "lightPosition");
+    glUniform3f(m_shaderProgram, 0, 0, 0);
+    */
+
+    /*
     cml::matrix44f_c transformViewProjectionMatrix = cameraProjectionMatrix * cameraViewMatrix * m_transformMatrixPair.first;
 
     //Update matrix
     glProgramUniformMatrix4fv(m_shaderProgram, m_transformViewProjectionMatrixUniform, 1, GL_FALSE, transformViewProjectionMatrix.data());
+    */
 
     //Draw
     glDrawElements(GL_TRIANGLES, GetIndices().size(), GL_UNSIGNED_INT, &GetIndices()[0]);
@@ -151,16 +165,37 @@ void RenderComponent::CreateProgram()
     m_shaderProgram = glCreateProgram();
     glAttachShader(m_shaderProgram, m_pMaterial->GetShaderGLPointer(ShaderType::k_vertex));
     glAttachShader(m_shaderProgram, m_pMaterial->GetShaderGLPointer(ShaderType::k_fragment));
+    
+    glBindFragDataLocation(m_shaderProgram, 0, "colorRGBA");
     glLinkProgram(m_shaderProgram);
-    glBindFragDataLocation(m_shaderProgram, 0, "outColor");
     glUseProgram(m_shaderProgram);
 
     //Will set attributes for the currently bound VBO
-    GLint posAttrib = glGetAttribLocation(m_shaderProgram, "position");
+
+    //UVs
+    glBindBuffer(GL_ARRAY_BUFFER, GetUVBufferObject());
+    GLint texAttrib = glGetAttribLocation(m_shaderProgram, "vertUV");
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(texAttrib);
+
+    //NORMALS
+    glBindBuffer(GL_ARRAY_BUFFER, GetVertexNormalObject());
+    GLint normalAttrib = glGetAttribLocation(m_shaderProgram, "vertexNormal");
+    glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(normalAttrib);
+
+    //POSITION
+    glBindBuffer(GL_ARRAY_BUFFER, GetVBO());
+    //GLint posAttrib = glGetAttribLocation(m_shaderProgram, "position");
+    GLint posAttrib = glGetAttribLocation(m_shaderProgram, "vertex");
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(posAttrib);
 
-    m_transformViewProjectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformViewProjectionMatrix");
+    m_transformMatrixPair.second = glGetUniformLocation(m_shaderProgram, "transformMatrix");
+    m_viewMatrixUniform = glGetUniformLocation(m_shaderProgram, "viewMatrix");
+    m_projectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "projectionMatrix");
+
+    //m_transformViewProjectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformViewProjectionMatrix");
 
     glBindVertexArray(0);
 }
@@ -168,4 +203,6 @@ void RenderComponent::CreateProgram()
 GLuint RenderComponent::GetVBO() { return m_pMesh->GetVBO(); }
 GLuint RenderComponent::GetEBO() { return m_pMesh->GetEBO(); }
 GLuint RenderComponent::GetVAO() { return m_pMesh->GetVAO(); }
+GLuint RenderComponent::GetVertexNormalObject() { return m_pMesh->GetNormalBuffer(); }
+GLuint RenderComponent::GetUVBufferObject() { return m_pMesh->GetUVBuffer(); }
 std::vector<unsigned int> RenderComponent::GetIndices() { return m_pMesh->GetIndices(); }

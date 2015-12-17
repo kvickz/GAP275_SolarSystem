@@ -3,7 +3,7 @@
 //11-26-2015
 //Main.cpp
 
-//#include <vld.h>
+#include <vld.h>
 #include <SDL.h>
 #include "Game.h"
 

@@ -22,12 +22,15 @@ private:
     GLuint m_elementBufferObject;
     GLuint m_vertexArrayObject;
 
+    GLuint m_vertexNormalBufferObject;
+    GLuint m_UVBufferObject;
+
     std::vector<float> m_verts;
+    std::vector<float> m_vertNormals;
     std::vector<unsigned int> m_indices;
+    std::vector<unsigned int> m_UVindices;
 
 public:
-    //[???] I get an error saying no default constructor available if this is commented out
-    //      but I don't know why. I'm not calling the default constructor from anywhere.
     Mesh() {};
     Mesh(const char* const fileName);
     ~Mesh();
@@ -35,6 +38,8 @@ public:
     GLuint GetVBO() { return m_vertexBufferObject; }
     GLuint GetEBO() { return m_elementBufferObject; }
     GLuint GetVAO() { return m_vertexArrayObject; }
+    GLuint GetNormalBuffer() { return m_vertexNormalBufferObject; }
+    GLuint GetUVBuffer() { return m_UVBufferObject; }
     std::vector<unsigned int> GetIndices() { return m_indices; }
 
 private:

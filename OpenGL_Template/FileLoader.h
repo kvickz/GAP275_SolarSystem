@@ -71,28 +71,27 @@ private:
     ObjDataFunctionTable m_dataFunctionTable;
 
     std::string m_fileName;
-    std::vector<Vertex> m_vertices;
-    std::vector<Vertex> m_textureVertices;
-    std::vector<Face> m_faces;
+
     std::vector<float> m_textureVerticesAsFloats;
-    std::vector<float> m_verticesAsFloats;
+    std::vector<float> m_vertices;
     std::vector<float> m_vertexNormals;
-    std::vector<unsigned int> m_faceIndices;
-    std::vector<unsigned int> m_faceTexCoordIndices;
-    std::vector<unsigned int> m_vertNormalIndices;
+    std::vector<unsigned int> m_vertexIndices;
+    std::vector<unsigned int> m_uvIndices;
+    std::vector<unsigned int> m_normalIndices;
 
 public:
     ObjFile();
 
 	bool Load(std::string fileName);
 
-    const std::vector<Vertex>& GetVerticesAsStructs() const;
-    std::vector<float>& GetVerticesAsFloats();
-    const std::vector<Face>& GetFacesAsStructs() const;
-    std::vector<unsigned int>& ObjFile::GetFacesAsIndices();
+    std::vector<float>& GetVertices();
+    std::vector<float>& GetVertexNormals();
+    std::vector<unsigned int>& ObjFile::GetVertexIndices();
+    std::vector<unsigned int>& ObjFile::GetVertNormalIndices();
+    std::vector<unsigned int>& ObjFile::GetUVIndices();
 
-    unsigned int GetNumberOfIndices() const { return m_faceIndices.size(); }
-    void* GetStartingIndexAddress() { return &m_faceIndices[0]; }
+    unsigned int GetNumberOfIndices() const { return m_vertexIndices.size(); }
+    void* GetStartingIndexAddress() { return &m_vertexIndices[0]; }
 
 private:
     bool ParseFile();
@@ -104,10 +103,11 @@ private:
     void GetVertGeometry(std::string currentLine);
     void GetVertTexture(std::string currentLine);
     void GetVertNormal(std::string currentLine);
+
+    void GenericGetVertexData(std::string currentLine, int startOffset, std::vector<float>& collection);
+
     void GetFaces(std::string currentLine);
 
-    void RetrieveVertsFromFile();
-    void RetrieveFacesFromFile();
 };
 
 #endif // !FILELOADER_H

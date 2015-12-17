@@ -6,6 +6,7 @@
 
 #include <gl\glew.h>
 #include <SDL_opengl.h>
+#include <SDL.h>
 
 Material::Material()
 {
@@ -48,6 +49,15 @@ void Material::LoadShader(const char* const fileName, ShaderType type)
     const char* source = pTempShader.first.GetSource();
     glShaderSource(pTempShader.second, 1, &(source), nullptr);
     glCompileShader(pTempShader.second);
+
+    //Check For compile error
+    GLint success = 0;
+    glGetShaderiv(pTempShader.second, GL_COMPILE_STATUS, &success);
+
+    if (success == GL_FALSE)
+    {
+        SDL_Log("Shader failed to compile!: %s", fileName);
+    }
 
     //Add temp to list
     m_shaders.emplace(type, pTempShader);

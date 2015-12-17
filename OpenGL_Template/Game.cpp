@@ -81,29 +81,8 @@ void Game::CreateGameObjects()
     GameObjectFactory factory(m_pRenderer, m_pTime);
     Mesh* pSphereMesh = m_pAssetManager->LoadMesh("sphere.obj");
     //Mesh* pSphereMesh = m_pAssetManager->LoadMesh("TurtleTris.obj");
-    Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
-
-	/*
-    //Creating a grid of objects
-    for (int j = 0; j < k_numOfSpheres; ++j)
-    {
-        for (int i = 0; i < k_numOfSpheres; ++i)
-        {
-            unsigned int index = j * k_numOfSpheres + i;
-
-            m_gameObjects.push_back(factory.CreatePlanet(this));
-            m_gameObjects[index]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
-
-            float x = (float)(i * k_positionOffset);
-            float y = (float)(j * k_positionOffset);
-            //float x = 0;
-            //float y = 5;
-            float z = -50.f;
-            m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
-            //m_gameObjects[index]->GetTransformComponent()->SetPosition(0, 0, 0);
-        }
-    }
-    */
+    //Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
+    Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "LambertVertexShader.glsl", "LambertFragmentShader.glsl");
 
 	//OBJ1
     m_gameObjects.push_back(factory.CreatePlanet(this));
@@ -117,7 +96,6 @@ void Game::CreateGameObjects()
 	m_gameObjects[1]->GetTransformComponent()->SetPosition(0, 0, 5);
 	float scaleFactor = 0.5f;
 	m_gameObjects[1]->GetTransformComponent()->SetScale(scaleFactor, scaleFactor, scaleFactor);
-
 	m_gameObjects[1]->GetTransformComponent()->SetEulerRotation(0, 1, 0);
 
 	//OBJ3
@@ -127,21 +105,11 @@ void Game::CreateGameObjects()
 	scaleFactor = 0.2f;
 	m_gameObjects[2]->GetTransformComponent()->SetScale(scaleFactor, scaleFactor, scaleFactor);
 	
-
-
-    //Testing parenting
-    /*
-    for (int i = 0; i < (k_numOfSpheres * k_numOfSpheres) - 1; ++i)
-    {
-        m_gameObjects[i + 1]->GetTransformComponent()->SetParent(m_gameObjects[i]->GetTransformComponent());
-    }
-    */
-
+    //PARENTING
     m_gameObjects[1]->GetTransformComponent()->SetParent(m_gameObjects[0]->GetTransformComponent());
     m_gameObjects[2]->GetTransformComponent()->SetParent(m_gameObjects[1]->GetTransformComponent());
-    //m_gameObjects[3]->GetTransformComponent()->SetParent(m_gameObjects[2]->GetTransformComponent());
-    
 
+    //CREATE CAMERA
     m_pCamera = factory.CreateCamera(this);
     m_pInputManager->AddPlayer(0, m_pCamera);
     m_gameObjects.push_back(m_pCamera);
@@ -152,19 +120,6 @@ void Game::CreateGameObjects()
     {
         pGameObj->Init();
     }
-
-    /*
-    //OBJ 0
-    Material* pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
-    m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->Init("Sphere.obj", pMaterial);
-
-    //OBJ 1
-    pMaterial = new Material("VertexShader.glsl", "FragmentShader.glsl");
-    m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->Init("Sphere.obj", pMaterial);
-
-    m_gameObjects[0]->GetTransformComponent()->SetPosition(2.8f, 0.f, -5.9f);
-    m_gameObjects[1]->GetTransformComponent()->SetPosition(-2.8f, 0.f, -5.9f);
-    */
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -205,22 +160,7 @@ void Game::UpdateGameLogic()
     //float sinVal = sinf(SDL_GetTicks() * 0.01f) * 0.01f;
 	//m_gameObjects[0]->GetTransformComponent()->Translate(sinVal, 0.f, 0.f);
 	m_gameObjects[0]->GetTransformComponent()->Rotate(0.f, 0.01f, 0.f);
-	//m_gameObjects[1]->GetTransformComponent()->Rotate(0.f, 0.02f, 0.f);
     
-    /*
-    for (int j = 0; j < k_numOfSpheres; ++j)
-    {
-        for (int i = 0; i < k_numOfSpheres; ++i)
-        {
-            unsigned int index = j * k_numOfSpheres + i;
-
-            float x = ((sinVal * 3.f) + ((float)(i * k_positionOffset)));
-            float y = (float)(j * k_positionOffset);
-            float z = -50.f;
-            m_gameObjects[index]->GetTransformComponent()->SetPosition(x, y, z);
-        }
-    }
-    */
 }
 
 //-------------------------------------------------------------------------------------- -

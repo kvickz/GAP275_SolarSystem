@@ -139,7 +139,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShader.glsl" />
+    <None Include="LambertVertexShader.glsl" />
     <None Include="VertexShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LambertFragmentShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

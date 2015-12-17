@@ -59,6 +59,8 @@ public:
     GLuint GetVBO();
     GLuint GetEBO();
     GLuint GetVAO();
+    GLuint GetVertexNormalObject();
+    GLuint GetUVBufferObject();
     GLuint GetShaderProgram() { return m_shaderProgram; }
 
     //Matrices

@@ -143,6 +143,9 @@
     <None Include="VertexShader.glsl">
       <Filter>Assets\Shaders</Filter>
     </None>
+    <None Include="LambertVertexShader.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -166,5 +169,10 @@
     <Filter Include="Assets\Shaders">
       <UniqueIdentifier>{56875c97-73b7-4beb-8b1b-5c995b344d00}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LambertFragmentShader.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

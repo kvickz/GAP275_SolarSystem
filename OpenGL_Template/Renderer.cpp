@@ -43,8 +43,11 @@ void Renderer::Init()
     //Setting clear color
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
+    //Enable depth buffer
+    glEnable(GL_DEPTH_TEST);
+
     //Setting polygon mode
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -66,7 +69,7 @@ void Renderer::Shutdown()
 
 void Renderer::ClearScreen()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::SwapWindow()

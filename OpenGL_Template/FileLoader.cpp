@@ -111,52 +111,41 @@ void ObjFile::HandleType(const ObjDataID objDataID, std::string currentLine)
 }
 
 //-------------------------------------------------------------------------------------- -
-// Skip Function
-//      -Skips the line while parsing a file
+// Delegation Functions
+//      -Each function is responsible for certain types of data in obj files
+//       this data is represented by the first set of letters on each new line.
 //-------------------------------------------------------------------------------------- -
 void ObjFile::Skip(std::string currentLine) { }
 
-//-------------------------------------------------------------------------------------- -
-// Get Vertex Geometry Function
-//-------------------------------------------------------------------------------------- -
 void ObjFile::GetVertGeometry(std::string currentLine)
 {
-    const int k_startOffset = 2;
-
-    std::string tempString;
-
-    //Read the line
-    for (unsigned int i = k_startOffset; i <= currentLine.size(); ++i)
-    {
-        if (currentLine[i] == SPACE || currentLine[i] == NEWLINE)
-        {
-            float convertedString = (float)::atof(tempString.c_str());    //Convert to a float
-            m_verticesAsFloats.push_back(convertedString);                //push it back
-            tempString.clear();                                           //Clear the string
-        }
-        else
-        {
-            tempString += currentLine[i];
-        }
-    }
+    GenericGetVertexData(currentLine, 2, m_vertices);
 }
 
-//-------------------------------------------------------------------------------------- -
-// Get Vertex Texture Function
-//-------------------------------------------------------------------------------------- -
 void ObjFile::GetVertTexture(std::string currentLine)
 {
-    const int k_startOffset = 3;
+    GenericGetVertexData(currentLine, 3, m_textureVerticesAsFloats);
+}
 
+void ObjFile::GetVertNormal(std::string currentLine)
+{
+    GenericGetVertexData(currentLine, 3, m_vertexNormals);
+}
+
+//***************************
+//      GET VERTS
+//***************************
+void ObjFile::GenericGetVertexData(std::string currentLine, int startOffset, std::vector<float>& collection)
+{
     std::string tempString;
 
     //Read the line
-    for (unsigned int i = k_startOffset; i <= currentLine.size(); ++i)
+    for (unsigned int i = startOffset; i <= currentLine.size(); ++i)
     {
         if (currentLine[i] == SPACE || currentLine[i] == NEWLINE)
         {
             float convertedString = (float)::atof(tempString.c_str());    //Convert to a float
-            m_textureVerticesAsFloats.push_back(convertedString);         //push it back
+            collection.push_back(convertedString);                //push it back
             tempString.clear();                                           //Clear the string
         }
         else
@@ -166,39 +155,19 @@ void ObjFile::GetVertTexture(std::string currentLine)
     }
 }
 
-//-------------------------------------------------------------------------------------- -
-// Get Vertex Normal Function
-//-------------------------------------------------------------------------------------- -
-void ObjFile::GetVertNormal(std::string currentLine)
-{
-    const int k_startOffset = 3;
-
-    std::string tempString;
-
-    //Read the line
-    for (unsigned int i = k_startOffset; i <= currentLine.size(); ++i)
-    {
-        if (currentLine[i] == SPACE || currentLine[i] == NEWLINE)
-        {
-            float convertedString = (float)::atof(tempString.c_str());      //Convert to a float
-            m_vertexNormals.push_back(convertedString);                     //push it back
-            tempString.clear();                                             //Clear the string
-        }
-        else
-        {
-            tempString += currentLine[i];
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------- -
-// Get Vertex Faces Function
-//-------------------------------------------------------------------------------------- -
+//***************************
+//      GET FACES
+//***************************
 void ObjFile::GetFaces(std::string currentLine)
 {
     const int k_startOffset = 2;
-    unsigned int faceTypeIndex = 0;
+    unsigned int indicesCollectionIndex = 0;
     std::string tempString;
+
+    std::vector<unsigned int>* pIndexCollections[3];
+    pIndexCollections[0] = &m_vertexIndices;
+    pIndexCollections[1] = &m_uvIndices;
+    pIndexCollections[2] = &m_normalIndices;
 
     //Read the line
     for (unsigned int i = k_startOffset; i <= currentLine.size(); ++i)
@@ -206,27 +175,20 @@ void ObjFile::GetFaces(std::string currentLine)
         char currentChar = currentLine[i];
         if (currentChar == SPACE || currentChar == NEWLINE || currentChar == FORWARDSLASH)
         {
-            unsigned int convertedString = (unsigned int)::atoi(tempString.c_str()) - 1;    //convert 1-based indexing to 0
+            //Convert value from string to int, also convert 1-based indexing from obj to 0
+            unsigned int convertedString = (unsigned int)::atoi(tempString.c_str()) - 1;    
 
-            switch (faceTypeIndex)
-            {
-            case 0:
-                m_faceIndices.push_back(convertedString);
-                break;
-            case 1:
-                m_faceTexCoordIndices.push_back(convertedString);
-                break;
-            case 2:
-                m_vertNormalIndices.push_back(convertedString);
-                break;
-            }
+            //Push the value to the appropriate collection
+            pIndexCollections[indicesCollectionIndex]->push_back(convertedString);
             
+            //Clear and reset
             tempString.clear();
 
+            //Iterate the index if necessary, if not, just reset
             if (currentChar == FORWARDSLASH)
-                ++faceTypeIndex;
+                ++indicesCollectionIndex;
             else if (currentChar == SPACE)
-                faceTypeIndex = 0;
+                indicesCollectionIndex = 0;
         }
         else
         {
@@ -237,42 +199,67 @@ void ObjFile::GetFaces(std::string currentLine)
 
 //---------------------------------------------------------------------------- -
 //  Get Vertices Function
-//      -Returns the vertices in the form of structs.
-//---------------------------------------------------------------------------- -
-const std::vector<Vertex>& ObjFile::GetVerticesAsStructs() const
-{
-    return m_vertices;   
-}
-
-//---------------------------------------------------------------------------- -
-//  Get Vertices Function
 //      -Returns the vertices in the form of floats.
 //---------------------------------------------------------------------------- -
-std::vector<float>& ObjFile::GetVerticesAsFloats()
+std::vector<float>& ObjFile::GetVertices()
 {
-    return m_verticesAsFloats;
+    return m_vertices;
 }
 
-const std::vector<Face>& ObjFile::GetFacesAsStructs() const
+//---------------------------------------------------------------------------- -
+//  Get Vertex Normals Function
+//      -Returns the vertex normals in the form of floats.
+//---------------------------------------------------------------------------- -
+std::vector<float>& ObjFile::GetVertexNormals()
 {
-    return m_faces;
+    return m_vertexNormals;
+}
+
+//---------------------------------------------------------------------------- -
+//  Get UV Texture Coordinates Function
+//      -Returns the texture coordinates in the form of unsigned ints.
+//---------------------------------------------------------------------------- -
+std::vector<unsigned int>& ObjFile::GetUVIndices()
+{
+    return m_uvIndices;
 }
 
 //---------------------------------------------------------------------------- -
 //  Get Faces Function
-//      -Returns the vertices in the form of floats.
+//      -Returns the vertices in the form of unsigned ints.
 //---------------------------------------------------------------------------- -
-std::vector<unsigned int>& ObjFile::GetFacesAsIndices()
+std::vector<unsigned int>& ObjFile::GetVertexIndices()
 {
-    return m_faceIndices;
+    return m_vertexIndices;
 }
 
+//---------------------------------------------------------------------------- -
+//  Get Faces Function
+//      -Returns the vertices in the form of unsigned ints.
+//---------------------------------------------------------------------------- -
+std::vector<unsigned int>& ObjFile::GetVertNormalIndices()
+{
+    return m_normalIndices;
+}
+
+
+//---------------------------------------------------------------------------- -
+//  Load Function
+//      -Takes in a string of a filename
+//---------------------------------------------------------------------------- -
 bool ShaderFile::Load(std::string fileName)
 {
     std::ifstream tempStream;
     m_fileSource.clear();
 
     tempStream.open(fileName);
+
+    //Failed to open file
+    if (!tempStream.is_open())
+    {
+        SDL_Log("Failed to open file: %s", m_fileName);
+        return false;
+    }
 
     std::string currentLine;
 
