@@ -335,9 +335,11 @@ void InputManager::ApplyMouseInput()
 
     if (m_rightMouse_Pressed)
     {
-        //Calculate offset
+        //Calculate offset  **This is better for controls that need to be persistent**
         //m_mouseDragOffset_Right.x = m_currentMousePosition.x - m_lastClickedMousePosition_Right.x;
         //m_mouseDragOffset_Right.y = m_currentMousePosition.y - m_lastClickedMousePosition_Right.y;
+
+        //Calculate offset  **This is better for click drag without any continuous movement**
         m_mouseDragOffset_Right.x = m_currentMousePosition.x - m_previousMousePosition.x;
         m_mouseDragOffset_Right.y = m_currentMousePosition.y - m_previousMousePosition.y;
 

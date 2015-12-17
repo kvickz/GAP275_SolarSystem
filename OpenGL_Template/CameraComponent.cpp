@@ -16,7 +16,7 @@ CameraComponent::CameraComponent(const ComponentID id, GameObject* pGameObject, 
     , m_farClippingPlane(1000.f)
     , m_nearClippingPlane(0.1f)
     , m_fieldOfView(70.f)
-    , m_moveSpeed(0.5f)
+    , m_moveSpeed(0.3f)
     , m_rotationSpeed(8000.f)
 {
     m_viewMatrix.identity();
