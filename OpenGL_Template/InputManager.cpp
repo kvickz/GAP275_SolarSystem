@@ -249,6 +249,8 @@ int InputManager::HandleEvents()
             //Gathers mouse x and y
             m_currentMousePosition.x = appEvent.button.x;
             m_currentMousePosition.y = appEvent.button.y;
+
+            m_mouseMovedThisUpdate = true;
         }
     }
 
@@ -328,6 +330,15 @@ void InputManager::ApplyKeyboardInput()
 
 void InputManager::ApplyMouseInput()
 {
+    //This is necessary because mouse variables only update when the mouse moves
+    //It keeps the screen still while holding right click
+    if (!m_mouseMovedThisUpdate)
+    {
+        //Assign previous mouse pos
+        m_previousMousePosition.x = m_currentMousePosition.x;
+        m_previousMousePosition.y = m_currentMousePosition.y;
+    }
+
     if (m_leftMouse_Pressed)
     {
         //
@@ -377,4 +388,6 @@ void InputManager::ResetUpdateVariables()
     //Default axes to zero
     m_pKeyboardCommands->axis_XYZ->ResetAxisValues();
     m_pKeyboardCommands->axis_XYZ_rotation->ResetAxisValues();
+
+    m_mouseMovedThisUpdate = false;
 }

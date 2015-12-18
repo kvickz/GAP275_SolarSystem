@@ -44,7 +44,10 @@ public:
     void AddComponent(const ComponentID key, GameObjectComponent* pNewComponent);
     void RemoveComponent(const ComponentID key);
 
-    Game* GetGame() { return m_pGame; }
+    Game* GetGame() 
+    { 
+        return m_pGame; 
+    }
 
     //----------------------------------------------------------------------------------
     //  Get Component Functions

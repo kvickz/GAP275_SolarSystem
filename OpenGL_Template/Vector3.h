@@ -17,6 +17,15 @@ public:
 
     void SetValue(float x, float y, float z);
     void Add(float x, float y, float z);
+
+    Vector3 operator+(Vector3 b);
+    Vector3 operator-(Vector3 b);
+    Vector3 operator*(float b);
+    Vector3 operator/(float b);
+
+    static float Distance(Vector3 a, Vector3 b);
+    Vector3 Normalized();
+    float Magnitude();
 };
 
 #endif // !VECTOR3_H

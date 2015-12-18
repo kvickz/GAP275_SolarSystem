@@ -94,6 +94,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CameraMoveCommand.cpp" />
     <ClCompile Include="CameraRotateCommand.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="FileLoader.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -105,6 +106,8 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PlanetController.cpp" />
+    <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -116,6 +119,7 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraRotateCommand.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Enums.h" />
@@ -126,9 +130,12 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectComponent.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="CameraMoveCommand.h" />
+    <ClInclude Include="PlanetController.h" />
+    <ClInclude Include="PointLightComponent.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Time.h" />

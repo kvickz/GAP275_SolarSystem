@@ -68,51 +68,94 @@ void Game::Init()
 //       all of the initial objects for the game.
 //-------------------------------------------------------------------------------------- -
 #include "Enums.h"
+#include "Color.h"
 #include "Constants.h"
 #include "Material.h"
 #include "TransformComponent.h"
+#include "PlanetController.h"
 #include "Mesh.h"
 
 const int k_numOfSpheres = 2;
 const int k_positionOffset = 2;
 
+struct SuperThing{
+    float a;
+    float b;
+    float c;
+};
+
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
+    
     Mesh* pSphereMesh = m_pAssetManager->LoadMesh("sphere.obj");
+    //TODO: Figure out why this makes everything else stop drawing
+    Mesh* pRingMesh = m_pAssetManager->LoadMesh("ring.obj");
+    
     //Mesh* pSphereMesh = m_pAssetManager->LoadMesh("TurtleTris.obj");
     //Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
-    Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "LambertVertexShader.glsl", "LambertFragmentShader.glsl");
 
-	//OBJ1
-    m_gameObjects.push_back(factory.CreatePlanet(this));
-    m_gameObjects[0]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
-    m_gameObjects[0]->GetTransformComponent()->SetPosition(0, 0, -50);
+    Color defaultColor(0.8f, 0.8f, 0.8f);
+    Color defaultAmbientColor(0.1f, 0.1f, 0.1f);
+    m_pAssetManager->LoadMaterial("DefaultMaterial", "LambertVertexShader.glsl", "LambertFragmentShader.glsl", defaultColor, defaultAmbientColor);
     
-	
-	//OBJ2
-	m_gameObjects.push_back(factory.CreatePlanet(this));
-	m_gameObjects[1]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
-	m_gameObjects[1]->GetTransformComponent()->SetPosition(0, 0, 5);
-	float scaleFactor = 0.5f;
-	m_gameObjects[1]->GetTransformComponent()->SetScale(scaleFactor, scaleFactor, scaleFactor);
-	m_gameObjects[1]->GetTransformComponent()->SetEulerRotation(0, 1, 0);
+    Material* pMaterial = m_pAssetManager->CreateMaterialInstance("DefaultMaterial");
 
-	//OBJ3
-	m_gameObjects.push_back(factory.CreatePlanet(this));
-	m_gameObjects[2]->GetComponent<RenderComponent>(k_renderComponentID)->Init(pSphereMesh, pMaterial);
-	m_gameObjects[2]->GetTransformComponent()->SetPosition(0, 0, 3);
-	scaleFactor = 0.2f;
-	m_gameObjects[2]->GetTransformComponent()->SetScale(scaleFactor, scaleFactor, scaleFactor);
-	
-    //PARENTING
-    m_gameObjects[1]->GetTransformComponent()->SetParent(m_gameObjects[0]->GetTransformComponent());
-    m_gameObjects[2]->GetTransformComponent()->SetParent(m_gameObjects[1]->GetTransformComponent());
+    Material* pMaterialSun = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.9f, 0.5f));
+    Material* pMaterialMercury = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.3f, 0.0f));
+    Material* pMaterialVenus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.7f, 0.9f, 0.f));
+    Material* pMaterialEarth = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.9f, 0.4f));
+    Material* pMaterialMars = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.2f, 0.0f));
+    Material* pMaterialJupiter = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.9f, 0.7f, 0.4f));
+    Material* pMaterialSaturn = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.8f, 0.5f));
+    Material* pMaterialUranus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.6f, 0.7f));
+    Material* pMaterialNeptune = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.0f, 0.5f, 0.9f));
+    Material* pMaterialPluto = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.7f, 0.6f));
+
+    //Creating an empty transform object to parent planets to to give them independent rotations
+    const int k_numOfPlanets = 9;
+    GameObject* pOrbitPositionObject[k_numOfPlanets];
+    for (int i = 0; i < k_numOfPlanets; ++i)
+    {
+        pOrbitPositionObject[i] = CreateEmptyObject();
+    }
+
+    m_pPointLight = CreatePointLightObject();
+
+    //Parameters = (PIVOT, PARENT, SCALE, ROTATION SPEED, MESH, MATERIAL)
+    //OBJ1  - The Sun
+    GameObject* pSun = CreatePlanet(Vector3(0, 0, 0), nullptr, 0.10f, 0.002f, pSphereMesh, pMaterialSun);
+    //OBJ2  - Mercury
+    GameObject* pMercury = CreatePlanet(Vector3(0, 0, 3.87f), pOrbitPositionObject[0], 0.00382f, 0.0016f, pSphereMesh, pMaterialMercury);
+	//OBJ3  - Venus
+    GameObject* pVenus = CreatePlanet(Vector3(0, 0, 7.23f), pOrbitPositionObject[1], 0.00949f, -0.00117f, pSphereMesh, pMaterialVenus);
+    //OBJ4  - Earth
+    GameObject* pEarth = CreatePlanet(Vector3(0, 0, 10), pOrbitPositionObject[2], 0.01f, 0.0001f, pSphereMesh, pMaterialEarth);
+    //OBJ5  - Mars
+    GameObject* pMars = CreatePlanet(Vector3(0, 0, 15.24f), pOrbitPositionObject[3], 0.00532f, 0.000802f, pSphereMesh, pMaterialMars);
+    //OBJ6  - Jupiter
+    GameObject* pJupiter = CreatePlanet(Vector3(0, 0, 52.03f), pOrbitPositionObject[4], 0.11209f, 0.000434f, pSphereMesh, pMaterialJupiter);
+    //OBJ7  - Saturn
+    GameObject* pSaturn = CreatePlanet(Vector3(0, 0, 95.39f), pOrbitPositionObject[5], 0.09449f, 0.000323f, pSphereMesh, pMaterialSaturn);
+    //OBJ8  - Uranus
+    GameObject* pUranus = CreatePlanet(Vector3(0, 0, 191.8f), pOrbitPositionObject[6], 0.04007f, -0.000228f, pSphereMesh, pMaterialUranus);
+    //OBJ9  - Neptune
+    GameObject* pNeptune = CreatePlanet(Vector3(0, 0, 300.6f), pOrbitPositionObject[7], 0.03883f, 0.000182f, pSphereMesh, pMaterialNeptune);
+    //OBJ10  - Pluto
+    GameObject* pPluto = CreatePlanet(Vector3(0, 0, 395.2f), pOrbitPositionObject[8], 0.00166f, 0.000159f, pSphereMesh, pMaterialPluto);
+    //OBJ11 - Earth's moon
+    GameObject* pMoon = CreatePlanet(Vector3(0, 0, 1), pEarth, 0.0027f, 0.00343f, pSphereMesh, pMaterial);
+    //OBJ12  - Saturn's Ring
+    GameObject* pSaturnRing = CreatePlanet(Vector3(0, 0, 0), pSaturn, 0.17f, 0.0323f, pRingMesh, pMaterialSaturn);
+
+    //Make the sun glow!
+    pSun->GetComponent<RenderComponent>(k_renderComponentID)->SetAmbientColor(0.9f, 0.9f, 0);
 
     //CREATE CAMERA
     m_pCamera = factory.CreateCamera(this);
     m_pInputManager->AddPlayer(0, m_pCamera);
     m_gameObjects.push_back(m_pCamera);
+    m_pCamera->GetTransformComponent()->SetPosition(0, 0, 30);
 
     // Object Initialization
     //INIT ALL GAME OBJECTS
@@ -120,6 +163,64 @@ void Game::CreateGameObjects()
     {
         pGameObj->Init();
     }
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Create Object Functions
+//-------------------------------------------------------------------------------------- -
+//CREATE EMPTY OBJECT
+GameObject* Game::CreateEmptyObject()
+{
+    GameObjectFactory factory(m_pRenderer, m_pTime);
+    GameObject* pGameObject = factory.CreateEmptyGameObject(this);
+    m_gameObjects.push_back(pGameObject);
+    return pGameObject;
+}
+
+//CREATE POINT LIGHT
+GameObject* Game::CreatePointLightObject()
+{
+    GameObjectFactory factory(m_pRenderer, m_pTime);
+    GameObject* pGameObject = factory.CreatePointLight(this);
+    m_gameObjects.push_back(pGameObject);
+    return pGameObject;
+}
+
+//CREATE PLANET
+GameObject* Game::CreatePlanet(Vector3 position, GameObject* pParent, float scale, float rotationSpeed, Mesh* pMesh, Material* pMaterial)
+{
+    //Create Factory & Object
+    GameObjectFactory factory(m_pRenderer, m_pTime);
+    GameObject* pGameObject = factory.CreatePlanet(this);
+
+    //Add mesh & material
+    pGameObject->GetComponent<RenderComponent>(k_renderComponentID)->Init(pMesh, pMaterial);
+
+    //Set position
+    float distanceScale = 0.5f;
+    pGameObject->GetTransformComponent()->SetPosition(position.x, position.y, position.z * distanceScale);
+
+    //Set Scale
+    scale *= 5.0f;
+    pGameObject->GetTransformComponent()->SetScale(scale, scale, scale);
+
+    //Set Rotation Speed
+    float speedScale = 0.1f;
+    pGameObject->GetComponent<PlanetController>(k_planetComponentID)->SetRotationSpeed(rotationSpeed * speedScale);
+
+    //Set Parent
+    if (pParent) 
+    {   //Rotate around this object
+        pGameObject->GetComponent<PlanetController>(k_planetComponentID)->SetOrbitee(pParent);
+    }
+    else
+    {   //Rotate about itself
+        pGameObject->GetComponent<PlanetController>(k_planetComponentID)->SetOrbitee(pGameObject);
+    }
+
+    //Push GameObject to list
+    m_gameObjects.push_back(pGameObject);
+    return pGameObject;
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -157,10 +258,10 @@ void Game::UpdateGameLogic()
 {
 	UpdateGameObjects();
 
-    //float sinVal = sinf(SDL_GetTicks() * 0.01f) * 0.01f;
+    //float sinVal = sinf(SDL_GetTicks() * 0.01f) * 0.1f;
 	//m_gameObjects[0]->GetTransformComponent()->Translate(sinVal, 0.f, 0.f);
-	m_gameObjects[0]->GetTransformComponent()->Rotate(0.f, 0.01f, 0.f);
-    
+
+    //m_gameObjects[2]->GetTransformComponent()->Rotate(0.f, 0.0001f, 0.f);
 }
 
 //-------------------------------------------------------------------------------------- -

@@ -8,17 +8,32 @@
 #include <SDL_opengl.h>
 #include <SDL.h>
 
+//-------------------------------------------------------------------------------------- -
+//  Constructor
+//-------------------------------------------------------------------------------------- -
 Material::Material()
 {
     //
 }
 
-Material::Material(const char* const pVertexFilePath, const char* const pFragmentFilePath)
+Material::Material(const char* const pVertexFilePath, const char* const pFragmentFilePath, Color color)
 {
+    m_color = color;
     LoadShader(pVertexFilePath, ShaderType::k_vertex);
     LoadShader(pFragmentFilePath, ShaderType::k_fragment);
 }
 
+Material::Material(const char* const pVertexFilePath, const char* const pFragmentFilePath, Color color, Color ambientColor)
+{
+    m_color = color;
+    m_ambientColor = ambientColor;
+    LoadShader(pVertexFilePath, ShaderType::k_vertex);
+    LoadShader(pFragmentFilePath, ShaderType::k_fragment);
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Destructor
+//-------------------------------------------------------------------------------------- -
 Material::~Material()
 {
     //
@@ -67,7 +82,36 @@ void Material::LoadShader(const char* const fileName, ShaderType type)
     glGetShaderInfoLog(pTempShader.second, k_bufferSize, NULL, buffer);
 }
 
+//-------------------------------------------------------------------------------------- -
+//  Get Shader Pointer Function
+//-------------------------------------------------------------------------------------- -
 const GLuint Material::GetShaderGLPointer(const ShaderType type)
 {
     return m_shaders[type].second;
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Set Color Function
+//-------------------------------------------------------------------------------------- -
+void Material::SetColor(float r, float g, float b)
+{
+    m_color = Color(r, g, b);
+}
+
+void Material::SetAmbientColor(float r, float g, float b)
+{
+    m_ambientColor = Color(r, g, b);
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Set Color Function
+//-------------------------------------------------------------------------------------- -
+void Material::SetColor(Color color)
+{
+    m_color = color;
+}
+
+void Material::SetAmbientColor(Color color)
+{
+    m_ambientColor = color;
 }

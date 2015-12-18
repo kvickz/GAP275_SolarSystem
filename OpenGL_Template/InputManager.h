@@ -49,6 +49,8 @@ private:
     bool m_leftMouse_Pressed = false;
     bool m_rightMouse_Pressed = false;
 
+    bool m_mouseMovedThisUpdate;
+
     //Input Sensitivity
     const int k_mouseSensitivity;
     bool m_mouseXInverted;

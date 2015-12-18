@@ -64,6 +64,15 @@
     <ClCompile Include="Time.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetController.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLightComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -134,6 +143,18 @@
     </ClInclude>
     <ClInclude Include="Utility.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetController.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Macros.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightComponent.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

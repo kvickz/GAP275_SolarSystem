@@ -23,3 +23,17 @@ CameraComponent* GameObjectComponentFactory::CreateCameraComponent(GameObject* p
 
     return pComponent;
 }
+
+PlanetController* GameObjectComponentFactory::CreatePlanetController(GameObject* pGameObject, TransformComponent* pTransform)
+{
+    PlanetController* pComponent = new PlanetController(pGameObject, pTransform);
+
+    return pComponent;
+}
+
+PointLightComponent* GameObjectComponentFactory::CreatePointLightComponent(GameObject* pGameObject, TransformComponent* pTransform)
+{
+    PointLightComponent* pComponent = new PointLightComponent(pGameObject, pTransform);
+
+    return pComponent;
+}

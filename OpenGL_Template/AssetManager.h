@@ -6,14 +6,21 @@
 #include <unordered_map>
 #include <string>
 
+#include "Color.h"
+
 class Mesh;
 class Material;
+
+typedef std::unordered_map<std::string, Mesh*> MeshContainer;
+typedef std::unordered_map<std::string, Material*> MaterialContainer;
 
 class AssetManager
 {
 private:
-    std::unordered_map<const char*, Mesh*> m_meshes;
-    std::unordered_map<const char*, Material*> m_materials;
+    MeshContainer m_meshes;
+    MaterialContainer m_materials;
+
+    std::vector<Material*> m_materialInstances;
 
 public:
     AssetManager();
@@ -22,8 +29,15 @@ public:
     Mesh* LoadMesh(const char* const pFileName);
     Mesh* GetMesh(const char* const pFileName);
 
-    Material* LoadMaterial(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile);
+    Material* LoadMaterial(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile, Color color);
+    Material* LoadMaterial(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile, Color color, Color ambientColor);
     Material* GetMaterial(const char* const pMaterialName);
+
+    Material* CreateMaterialInstance(std::string pMaterialName);
+    Material* CreateMaterialInstance(std::string pMaterialName, Color newColor);
+
+private:
+    Material* LoadMaterialInternal(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile, Color color, Color ambientColor);
 };
 
 #endif // !ASSETMANAGER_H

@@ -19,6 +19,11 @@ RenderComponent::RenderComponent(ComponentID id, GameObject* pGameObject, Transf
     //Initialize to 1, 1, 1
     m_transformMatrixPair.first.identity();
 
+    //Zero out model coordinates
+    m_position.Zero();
+    m_rotation.Zero();
+    m_scale.Identity();
+
     m_pScaleReference = m_pGameObject->GetTransformComponent()->GetScalePointer();
     m_translationReference = m_pGameObject->GetTransformComponent()->GetPositionPointer();
     m_rotationReference = m_pGameObject->GetTransformComponent()->GetRotationPointer();
@@ -89,16 +94,19 @@ void RenderComponent::SetMesh(Mesh* pMesh)
 //      -Makes openGL calls to draw this object
 //-------------------------------------------------------------------------------------- -
 
+#include "Game.h"
+#include "PointLightComponent.h"
+
 void RenderComponent::Draw()
 {
     //Bind VAO
     glUseProgram(m_shaderProgram);
-    GLuint vao = GetVAO();
     glBindVertexArray(GetVAO());
 
-    //Get Transform, View, and Projection Matrices
-	//m_transformMatrixPair.first = m_pTransform->GetTransformMatrix();
-    m_transformMatrixPair.first = m_pTransform->GetWorldTransformMatrix();
+    CalculateModelMatrix();
+
+    //Get Model, Transform, View, and Projection Matrices
+    m_transformMatrixPair.first = m_pTransform->GetWorldTransformMatrix() * m_modelMatrix;
     cml::matrix44f_c cameraViewMatrix = m_pCameraComponent->GetViewMatrix();
     cml::matrix44f_c cameraProjectionMatrix = m_pCameraComponent->GetProjectionMatrix();
 
@@ -106,6 +114,16 @@ void RenderComponent::Draw()
     glProgramUniformMatrix4fv(m_shaderProgram, m_transformMatrixPair.second, 1, GL_FALSE, m_transformMatrixPair.first.data());
     glProgramUniformMatrix4fv(m_shaderProgram, m_viewMatrixUniform, 1, GL_FALSE, cameraViewMatrix.data());
     glProgramUniformMatrix4fv(m_shaderProgram, m_projectionMatrixUniform, 1, GL_FALSE, cameraProjectionMatrix.data());
+
+    //TODO: More elegant solution to this, lol
+    GameObject* pGameObject = m_pTransform->GetGameObject();
+    Vector3 pointLightPosition = pGameObject->GetGame()->GetPointLight()->GetTransformComponent()->GetPosition();
+    //Vector3 objectPosition = 
+    glProgramUniform3f(m_shaderProgram, m_pointLightPositionUniform, pointLightPosition.x, pointLightPosition.y, pointLightPosition.z);
+    
+    //COLOR
+    glUniform3f(m_materialColorUniform, m_pMaterialColor->r, m_pMaterialColor->g, m_pMaterialColor->b);
+    glUniform3f(m_materialAmbientColorUniform, m_pMaterialAmbientColor->r, m_pMaterialAmbientColor->g, m_pMaterialAmbientColor->b);
 
     /*
     //TODO: Get Light position in world space
@@ -125,6 +143,22 @@ void RenderComponent::Draw()
     glDrawElements(GL_TRIANGLES, GetIndices().size(), GL_UNSIGNED_INT, &GetIndices()[0]);
 
     glBindVertexArray(0);
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Calculate Model Matrix Function
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::CalculateModelMatrix()
+{
+    cml::matrix44f_c modelPosition;
+    cml::matrix44f_c modelRotation;
+    cml::matrix44f_c modelScale;
+
+    cml::matrix_translation(modelPosition, m_position.x, m_position.y, m_position.z);
+    cml::matrix_rotation_euler(modelRotation, m_rotation.x, m_rotation.y, m_rotation.z, cml::euler_order_xyz);
+    cml::matrix_scale(modelScale, m_scale.x, m_scale.y, m_scale.z);
+
+    m_modelMatrix = modelPosition * modelRotation * modelScale;
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -153,6 +187,42 @@ void RenderComponent::LoadMeshFromFile(const char* const fileName)
 void RenderComponent::LoadMaterial(Material* const pMaterial)
 {
     m_pMaterial = pMaterial;
+    m_pMaterialColor = &m_pMaterial->GetColorRef();
+    m_pMaterialAmbientColor = &m_pMaterial->GetAmbientColorRef();
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Set Color Function
+//      -Sets the color, will make changes take place next frame
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::SetColor(Color color)
+{
+    m_pMaterial->SetColor(color);
+    glUniform3f(m_materialColorUniform, color.r, color.g, color.b);
+}
+
+void RenderComponent::SetColor(float r, float g, float b)
+{
+    Color color(r, g, b);
+    m_pMaterial->SetColor(color);
+    glUniform3f(m_materialColorUniform, r, g, b);
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Set Ambient Color Function
+//      -Sets the ambient color, changes will take place next frame
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::SetAmbientColor(Color color)
+{
+    m_pMaterial->SetAmbientColor(color);
+    glUniform3f(m_materialAmbientColorUniform, color.r, color.g, color.b);
+}
+
+void RenderComponent::SetAmbientColor(float r, float g, float b)
+{
+    Color color(r, g, b);
+    m_pMaterial->SetAmbientColor(color);
+    glUniform3f(m_materialAmbientColorUniform, r, g, b);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -162,6 +232,8 @@ void RenderComponent::LoadMaterial(Material* const pMaterial)
 //-------------------------------------------------------------------------------------- -
 void RenderComponent::CreateProgram()
 {
+    glBindVertexArray(GetVAO());
+
     m_shaderProgram = glCreateProgram();
     glAttachShader(m_shaderProgram, m_pMaterial->GetShaderGLPointer(ShaderType::k_vertex));
     glAttachShader(m_shaderProgram, m_pMaterial->GetShaderGLPointer(ShaderType::k_fragment));
@@ -172,29 +244,32 @@ void RenderComponent::CreateProgram()
 
     //Will set attributes for the currently bound VBO
 
+    /*
     //UVs
-    glBindBuffer(GL_ARRAY_BUFFER, GetUVBufferObject());
     GLint texAttrib = glGetAttribLocation(m_shaderProgram, "vertUV");
-    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(texAttrib);
-
+    glBindBuffer(GL_ARRAY_BUFFER, GetUVBufferObject());
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    
     //NORMALS
-    glBindBuffer(GL_ARRAY_BUFFER, GetVertexNormalObject());
     GLint normalAttrib = glGetAttribLocation(m_shaderProgram, "vertexNormal");
-    glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(normalAttrib);
-
+    glBindBuffer(GL_ARRAY_BUFFER, GetVertexNormalObject());
+    glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    */
+    
     //POSITION
-    glBindBuffer(GL_ARRAY_BUFFER, GetVBO());
-    //GLint posAttrib = glGetAttribLocation(m_shaderProgram, "position");
     GLint posAttrib = glGetAttribLocation(m_shaderProgram, "vertex");
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(posAttrib);
+    glBindBuffer(GL_ARRAY_BUFFER, GetVBO());
+    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     m_transformMatrixPair.second = glGetUniformLocation(m_shaderProgram, "transformMatrix");
     m_viewMatrixUniform = glGetUniformLocation(m_shaderProgram, "viewMatrix");
     m_projectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "projectionMatrix");
-
+    m_pointLightPositionUniform = glGetUniformLocation(m_shaderProgram, "lightPosition");
+    m_materialColorUniform = glGetUniformLocation(m_shaderProgram, "materialDiffuse");
+    m_materialAmbientColorUniform = glGetUniformLocation(m_shaderProgram, "materialAmbient");
     //m_transformViewProjectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformViewProjectionMatrix");
 
     glBindVertexArray(0);
@@ -206,3 +281,51 @@ GLuint RenderComponent::GetVAO() { return m_pMesh->GetVAO(); }
 GLuint RenderComponent::GetVertexNormalObject() { return m_pMesh->GetNormalBuffer(); }
 GLuint RenderComponent::GetUVBufferObject() { return m_pMesh->GetUVBuffer(); }
 std::vector<unsigned int> RenderComponent::GetIndices() { return m_pMesh->GetIndices(); }
+
+
+//***************************************************************************************
+// POSITION
+//***************************************************************************************
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::SetPosition(float x, float y, float z)
+{
+    m_position.x = x;
+    m_position.y = y;
+    m_position.z = z;
+}
+
+void RenderComponent::Translate(float x, float y, float z)
+{
+    m_position.Add(x, y, z);
+}
+
+//***************************************************************************************
+// ROTATION
+//***************************************************************************************
+void RenderComponent::SetEulerRotation(float x, float y, float z)
+{
+    m_rotation.x = x;
+    m_rotation.y = y;
+    m_rotation.z = z;
+}
+
+void RenderComponent::Rotate(float x, float y, float z)
+{
+    m_rotation.Add(x, y, z);
+}
+
+//***************************************************************************************
+// SCALE
+//***************************************************************************************
+//-------------------------------------------------------------------------------------- -
+void RenderComponent::SetScale(float x, float y, float z)
+{
+    m_scale.x = x;
+    m_scale.y = y;
+    m_scale.z = z;
+}
+
+void RenderComponent::Scale(float x, float y, float z)
+{
+    m_scale.Add(x, y, z);
+}
