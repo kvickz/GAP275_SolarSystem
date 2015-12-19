@@ -225,6 +225,7 @@ void RenderComponent::SetAmbientColor(float r, float g, float b)
     glUniform3f(m_materialAmbientColorUniform, r, g, b);
 }
 
+#include "Texture.h"
 //-------------------------------------------------------------------------------------- -
 //  Create Program Function
 //      -Will create a program and link shaders to it
@@ -252,6 +253,8 @@ void RenderComponent::CreateProgram()
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     */
 
+    
+
     //NORMALS
     GLint normalAttrib = glGetAttribLocation(m_shaderProgram, "vertexNormal");
     glEnableVertexAttribArray(normalAttrib);
@@ -263,6 +266,14 @@ void RenderComponent::CreateProgram()
     glEnableVertexAttribArray(posAttrib);
     glBindBuffer(GL_ARRAY_BUFFER, GetVBO());
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    //TEXTURE
+    GLint textureAttrib = glGetAttribLocation(m_shaderProgram, "vertTextureCoordinate");
+    glEnableVertexAttribArray(textureAttrib);
+    glVertexAttribPointer(textureAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    //Create Texture
+    m_pMaterial->LoadTexture("earth.jpg", m_shaderProgram);
 
     m_transformMatrixPair.second =  glGetUniformLocation(m_shaderProgram, "transformMatrix");
     m_viewMatrixUniform =           glGetUniformLocation(m_shaderProgram, "viewMatrix");
@@ -279,6 +290,7 @@ GLuint RenderComponent::GetVBO() { return m_pMesh->GetVBO(); }
 GLuint RenderComponent::GetEBO() { return m_pMesh->GetEBO(); }
 GLuint RenderComponent::GetVAO() { return m_pMesh->GetVAO(); }
 GLuint RenderComponent::GetVertexNormalObject() { return m_pMesh->GetNormalBuffer(); }
+GLuint RenderComponent::GetTextureBufferObject() { return m_pMaterial->GetTextureBufferObject(); }
 GLuint RenderComponent::GetUVBufferObject() { return m_pMesh->GetUVBuffer(); }
 std::vector<unsigned int> RenderComponent::GetIndices() { return m_pMesh->GetIndices(); }
 

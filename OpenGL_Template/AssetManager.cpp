@@ -68,18 +68,18 @@ Mesh* AssetManager::GetMesh(const char* const pFileName)
 //--------------------------------------------------------------------------------------- -
 //  Material Functions
 //--------------------------------------------------------------------------------------- -
-Material* AssetManager::LoadMaterial(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile, Color color)
+Material* AssetManager::LoadMaterial(std::string pMaterialName, std::string pVertFile, std::string pFragFile, Color color)
 {
     return LoadMaterialInternal(pMaterialName, pVertFile, pFragFile, color, Color(0, 0, 0));
 }
 
-Material* AssetManager::LoadMaterial(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile, Color color, Color ambientColor)
+Material* AssetManager::LoadMaterial(std::string pMaterialName, std::string pVertFile, std::string pFragFile, Color color, Color ambientColor)
 {
     return LoadMaterialInternal(pMaterialName, pVertFile, pFragFile, color, ambientColor);
 }
 
 //Redirect to this function
-Material* AssetManager::LoadMaterialInternal(const char* const pMaterialName, const char* const pVertFile, const char* const pFragFile, Color color, Color ambientColor)
+Material* AssetManager::LoadMaterialInternal(std::string pMaterialName, std::string pVertFile, std::string pFragFile, Color color, Color ambientColor)
 {
     //Search if the material already exists
     auto findIt = m_materials.find(pMaterialName);
@@ -95,7 +95,7 @@ Material* AssetManager::LoadMaterialInternal(const char* const pMaterialName, co
 //--------------------------------------------------------------------------------------- -
 //  Get Material Function
 //--------------------------------------------------------------------------------------- -
-Material* AssetManager::GetMaterial(const char* const pMaterialName)
+Material* AssetManager::GetMaterial(std::string pMaterialName)
 {
     return m_materials[pMaterialName];
 }
@@ -122,4 +122,11 @@ Material* AssetManager::CreateMaterialInstance(std::string pMaterialName, Color 
     m_materialInstances.push_back(pNewMaterialInstance);
 
     return pNewMaterialInstance;
+}
+
+Texture* AssetManager::LoadTexture(const std::string pFileName)
+{
+
+
+    return nullptr;
 }

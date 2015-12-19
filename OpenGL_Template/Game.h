@@ -37,6 +37,7 @@ private:
     Time* m_pTime;
 
     GameObject* m_pPointLight;
+    GameObject* m_pSun;
 
 public:
     Game();

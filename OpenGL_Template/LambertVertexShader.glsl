@@ -9,6 +9,7 @@ in vec3 vertexColor;
 //in vec3 vertexNormal;
 
 // UVS //
+in vec2 vertTextureCoordinate;
 //in vec2 vertUV;
 
 // Output Variables //
@@ -16,6 +17,8 @@ out vec3 fragVertexPosition;
 out vec3 fragVertexNormal;
 //out vec2 fragUV;
 //out vec3 fragCameraPosition;
+
+out vec2 fragTextureCoordinate;
 
 // Uniforms //
 uniform mat4 transformMatrix = mat4(1.0);
@@ -39,6 +42,8 @@ void main() {
 
 	fragVertexPosition = vertexPosition.xyz;
 
+
+	fragTextureCoordinate = vertTextureCoordinate;
 	//fragUV = vertUV;
 	//fragPosition = vertex;
 	//fragCameraPosition = cameraPosition;

@@ -125,7 +125,7 @@ void Game::CreateGameObjects()
 
     //Parameters = (PIVOT, PARENT, SCALE, ROTATION SPEED, MESH, MATERIAL)
     //OBJ1  - The Sun
-    GameObject* pSun = CreatePlanet(Vector3(0, 50, 0), nullptr, 0.10f, 0.002f, pSphereMesh, pMaterialSun);
+    GameObject* pSun = CreatePlanet(Vector3(0, 0, 0), nullptr, 0.10f, 0.002f, pSphereMesh, pMaterialSun);
     //OBJ2  - Mercury
     GameObject* pMercury = CreatePlanet(Vector3(0, 0, 3.87f), pOrbitPositionObject[0], 0.00382f, 0.0016f, pSphereMesh, pMaterialMercury);
 	//OBJ3  - Venus
@@ -262,6 +262,8 @@ int Game::Update()
 void Game::UpdateGameLogic()
 {
 	UpdateGameObjects();
+
+    //m_pPointLight->GetTransformComponent()->Translate(0, 0.001f, 0);
 
     //float sinVal = sinf(SDL_GetTicks() * 0.01f) * 0.1f;
 	//m_gameObjects[0]->GetTransformComponent()->Translate(sinVal, 0.f, 0.f);

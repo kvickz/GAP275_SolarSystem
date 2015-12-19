@@ -3,7 +3,6 @@
 #include "FileLoader.h"
 
 #include <SDL.h>    //TODO: Extract out to debug class
-
 #include <fstream>
 
 #define SPACE ' '
@@ -19,8 +18,6 @@ ObjFile::ObjFile()
     m_objDataTable.emplace("f", ObjDataID::k_face);
     m_objDataTable.emplace("\n", ObjDataID::k_newLine);
     m_objDataTable.emplace("#", ObjDataID::k_comment);
-
-    std::string temp;
 
     //Initialize the data/function table, linking functions to object data
     m_dataFunctionTable.emplace(ObjDataID::k_vertGeo, &ObjFile::GetVertGeometry);

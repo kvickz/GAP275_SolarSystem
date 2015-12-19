@@ -3,27 +3,33 @@
 #include "Material.h"
 
 #include "FileLoader.h"
+#include "Texture.h"
 
 #include <gl\glew.h>
 #include <SDL_opengl.h>
 #include <SDL.h>
 
+#include "Macros.h"
+
 //-------------------------------------------------------------------------------------- -
 //  Constructor
 //-------------------------------------------------------------------------------------- -
 Material::Material()
+    :m_pTexture(nullptr)
 {
     //
 }
 
-Material::Material(const char* const pVertexFilePath, const char* const pFragmentFilePath, Color color)
+Material::Material(std::string pVertexFilePath, std::string pFragmentFilePath, Color color)
+    : m_pTexture(nullptr)
 {
     m_color = color;
     LoadShader(pVertexFilePath, ShaderType::k_vertex);
     LoadShader(pFragmentFilePath, ShaderType::k_fragment);
 }
 
-Material::Material(const char* const pVertexFilePath, const char* const pFragmentFilePath, Color color, Color ambientColor)
+Material::Material(std::string pVertexFilePath, std::string pFragmentFilePath, Color color, Color ambientColor)
+    :m_pTexture(nullptr)
 {
     m_color = color;
     m_ambientColor = ambientColor;
@@ -36,7 +42,7 @@ Material::Material(const char* const pVertexFilePath, const char* const pFragmen
 //-------------------------------------------------------------------------------------- -
 Material::~Material()
 {
-    //
+    SAFE_DELETE(m_pTexture);
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -44,7 +50,7 @@ Material::~Material()
 //      -Will load a shader from filepath
 //      -Also will create a 
 //-------------------------------------------------------------------------------------- -
-void Material::LoadShader(const char* const fileName, ShaderType type)
+void Material::LoadShader(std::string fileName, ShaderType type)
 {
     ShaderPair pTempShader;
 
@@ -114,4 +120,21 @@ void Material::SetColor(Color color)
 void Material::SetAmbientColor(Color color)
 {
     m_ambientColor = color;
+}
+
+//-------------------------------------------------------------------------------------- -
+//  Load Texture Function
+//-------------------------------------------------------------------------------------- -
+
+#include "Texture.h"
+
+void Material::LoadTexture(std::string fileName, GLuint shaderProgram)
+{
+    m_pTexture = new Texture(fileName);
+    m_pTexture->InitTexture(shaderProgram);
+}
+
+GLuint Material::GetTextureBufferObject()
+{
+    return m_pTexture->GetTextureObject();
 }

@@ -77,6 +77,7 @@ public:
     GLuint GetEBO();
     GLuint GetVAO();
     GLuint GetVertexNormalObject();
+    GLuint GetTextureBufferObject();
     GLuint GetUVBufferObject();
     GLuint GetShaderProgram() { return m_shaderProgram; }
 
