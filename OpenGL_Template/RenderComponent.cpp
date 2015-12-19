@@ -125,6 +125,8 @@ void RenderComponent::Draw()
     glUniform3f(m_materialColorUniform, m_pMaterialColor->r, m_pMaterialColor->g, m_pMaterialColor->b);
     glUniform3f(m_materialAmbientColorUniform, m_pMaterialAmbientColor->r, m_pMaterialAmbientColor->g, m_pMaterialAmbientColor->b);
 
+    //TEXTURE
+    glBindTexture(GL_TEXTURE_2D, m_pMaterial->GetTextureBufferObject());
     /*
     //TODO: Get Light position in world space
     GLint aLoc = glGetUniformLocation(m_shaderProgram, "lightPosition");

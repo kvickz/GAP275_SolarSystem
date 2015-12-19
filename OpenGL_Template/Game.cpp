@@ -103,6 +103,10 @@ void Game::CreateGameObjects()
     //  Load Texture  //
     m_pAssetManager->LoadTexture("DefaultTexture", "earth.jpg");
     Texture* pTextureDefault = m_pAssetManager->CreateTextureInstance("DefaultTexture");
+    m_pAssetManager->LoadTexture("Texture2", "testTexture.bmp");
+    Texture* pTexture2 = m_pAssetManager->CreateTextureInstance("Texture2");
+    m_pAssetManager->LoadTexture("Texture3", "testTexture2.bmp");
+    Texture* pTexture3 = m_pAssetManager->CreateTextureInstance("Texture3");
 
     //  Load Materials //
     m_pAssetManager->LoadMaterial("DefaultMaterial", "LambertVertexShader.glsl", "LambertFragmentShader.glsl", defaultColor, defaultAmbientColor);
@@ -112,8 +116,8 @@ void Game::CreateGameObjects()
     Material* pMaterialMercury = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.3f, 0.0f), pTextureDefault);
     Material* pMaterialVenus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.7f, 0.9f, 0.f), pTextureDefault);
     Material* pMaterialEarth = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.9f, 0.4f), pTextureDefault);
-    Material* pMaterialMars = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.2f, 0.0f), pTextureDefault);
-    Material* pMaterialJupiter = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.9f, 0.7f, 0.4f), pTextureDefault);
+    Material* pMaterialMars = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.2f, 0.0f), pTexture3);
+    Material* pMaterialJupiter = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.9f, 0.7f, 0.4f), pTexture2);
     Material* pMaterialSaturn = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.8f, 0.5f), pTextureDefault);
     Material* pMaterialUranus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.6f, 0.7f), pTextureDefault);
     Material* pMaterialNeptune = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.0f, 0.5f, 0.9f), pTextureDefault);
