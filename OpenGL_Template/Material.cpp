@@ -133,6 +133,12 @@ void Material::SetTexture(Texture* pTexture)
     m_pTexture = pTexture;
 }
 
+void Material::InitTexture(GLuint shaderProgram)
+{
+    m_pTexture->InitTexture(shaderProgram);
+}
+
+//TODO: Remove, or create texture through asset manager
 void Material::LoadTexture(std::string fileName, GLuint shaderProgram)
 {
     m_pTexture = new Texture(fileName);

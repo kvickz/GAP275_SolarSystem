@@ -41,6 +41,7 @@ public:
     Color& GetAmbientColorRef() { return m_ambientColor; }
 
     void SetTexture(Texture* pTexture);
+    void InitTexture(GLuint shaderProgram);
     void LoadTexture(std::string fileName, GLuint shaderProgram);
     GLuint GetTextureBufferObject();
 };

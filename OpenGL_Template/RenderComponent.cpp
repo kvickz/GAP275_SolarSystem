@@ -271,7 +271,8 @@ void RenderComponent::CreateProgram()
     glVertexAttribPointer(textureAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     
     //Create Texture
-    m_pMaterial->LoadTexture("earth.jpg", m_shaderProgram);
+    //m_pMaterial->LoadTexture("earth.jpg", m_shaderProgram);
+    m_pMaterial->InitTexture(m_shaderProgram);
 
     m_transformMatrixPair.second =  glGetUniformLocation(m_shaderProgram, "transformMatrix");
     m_viewMatrixUniform =           glGetUniformLocation(m_shaderProgram, "viewMatrix");

@@ -108,16 +108,16 @@ void Game::CreateGameObjects()
     m_pAssetManager->LoadMaterial("DefaultMaterial", "LambertVertexShader.glsl", "LambertFragmentShader.glsl", defaultColor, defaultAmbientColor);
     
     Material* pMaterial = m_pAssetManager->CreateMaterialInstance("DefaultMaterial");
-    Material* pMaterialSun = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.9f, 0.5f));
-    Material* pMaterialMercury = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.3f, 0.0f));
-    Material* pMaterialVenus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.7f, 0.9f, 0.f));
-    Material* pMaterialEarth = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.9f, 0.4f));
-    Material* pMaterialMars = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.2f, 0.0f));
-    Material* pMaterialJupiter = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.9f, 0.7f, 0.4f));
-    Material* pMaterialSaturn = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.8f, 0.5f));
-    Material* pMaterialUranus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.6f, 0.7f));
-    Material* pMaterialNeptune = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.0f, 0.5f, 0.9f));
-    Material* pMaterialPluto = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.7f, 0.6f));
+    Material* pMaterialSun = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.9f, 0.5f), pTextureDefault);
+    Material* pMaterialMercury = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.3f, 0.0f), pTextureDefault);
+    Material* pMaterialVenus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.7f, 0.9f, 0.f), pTextureDefault);
+    Material* pMaterialEarth = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.9f, 0.4f), pTextureDefault);
+    Material* pMaterialMars = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.2f, 0.0f), pTextureDefault);
+    Material* pMaterialJupiter = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.9f, 0.7f, 0.4f), pTextureDefault);
+    Material* pMaterialSaturn = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.8f, 0.5f), pTextureDefault);
+    Material* pMaterialUranus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.3f, 0.6f, 0.7f), pTextureDefault);
+    Material* pMaterialNeptune = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.0f, 0.5f, 0.9f), pTextureDefault);
+    Material* pMaterialPluto = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.8f, 0.7f, 0.6f), pTextureDefault);
 
     //Creating an empty transform object to parent planets to to give them independent rotations
     const int k_numOfPlanets = 9;
@@ -147,7 +147,7 @@ void Game::CreateGameObjects()
     //OBJ10  - Pluto
     GameObject* pPluto = CreatePlanet(Vector3(0, 0, 395.2f), pOrbitPositionObject[8], 0.00166f, 0.000159f, pSphereMesh, pMaterialPluto);
     //OBJ11 - Earth's moon
-    GameObject* pMoon = CreatePlanet(Vector3(0, 0, 1), pEarth, 0.0027f, 0.00343f, pSphereMesh, pMaterial);
+    GameObject* pMoon = CreatePlanet(Vector3(0, 0, 1), pEarth, 0.0027f, 0.00343f, pSphereMesh, pMaterialPluto);
     //OBJ12  - Saturn's Ring
     GameObject* pSaturnRing = CreatePlanet(Vector3(0, 0, 0), pSaturn, 0.17f, 0.0323f, pRingMesh, pMaterialSaturn);
 
