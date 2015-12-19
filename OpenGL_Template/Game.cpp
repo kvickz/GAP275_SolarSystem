@@ -84,6 +84,9 @@ struct SuperThing{
     float c;
 };
 
+#include "PointLightComponent.h"
+#include "GameObjectComponentFactory.h"
+
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
@@ -120,11 +123,9 @@ void Game::CreateGameObjects()
         pOrbitPositionObject[i] = CreateEmptyObject();
     }
 
-    m_pPointLight = CreatePointLightObject();
-
     //Parameters = (PIVOT, PARENT, SCALE, ROTATION SPEED, MESH, MATERIAL)
     //OBJ1  - The Sun
-    GameObject* pSun = CreatePlanet(Vector3(0, 0, 0), nullptr, 0.10f, 0.002f, pSphereMesh, pMaterialSun);
+    GameObject* pSun = CreatePlanet(Vector3(0, 50, 0), nullptr, 0.10f, 0.002f, pSphereMesh, pMaterialSun);
     //OBJ2  - Mercury
     GameObject* pMercury = CreatePlanet(Vector3(0, 0, 3.87f), pOrbitPositionObject[0], 0.00382f, 0.0016f, pSphereMesh, pMaterialMercury);
 	//OBJ3  - Venus
@@ -150,12 +151,16 @@ void Game::CreateGameObjects()
 
     //Make the sun glow!
     pSun->GetComponent<RenderComponent>(k_renderComponentID)->SetAmbientColor(0.9f, 0.9f, 0);
+    //Add Point Light Component to the sun
+    GameObjectComponentFactory componentFactory;
+    pSun->AddComponent(k_pointLightComponentID, componentFactory.CreatePointLightComponent(pSun, pSun->GetTransformComponent()));
+    m_pPointLight = pSun;
 
     //CREATE CAMERA
     m_pCamera = factory.CreateCamera(this);
     m_pInputManager->AddPlayer(0, m_pCamera);
     m_gameObjects.push_back(m_pCamera);
-    m_pCamera->GetTransformComponent()->SetPosition(0, 0, 30);
+    m_pCamera->GetTransformComponent()->SetPosition(0, 0, 0);
 
     // Object Initialization
     //INIT ALL GAME OBJECTS
@@ -205,7 +210,7 @@ GameObject* Game::CreatePlanet(Vector3 position, GameObject* pParent, float scal
     pGameObject->GetTransformComponent()->SetScale(scale, scale, scale);
 
     //Set Rotation Speed
-    float speedScale = 0.1f;
+    float speedScale = 0.5f;
     pGameObject->GetComponent<PlanetController>(k_planetComponentID)->SetRotationSpeed(rotationSpeed * speedScale);
 
     //Set Parent

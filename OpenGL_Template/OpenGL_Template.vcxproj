@@ -147,6 +147,8 @@
   <ItemGroup>
     <None Include="FragmentShader.glsl" />
     <None Include="LambertVertexShader.glsl" />
+    <None Include="opengl_fragment.glsl" />
+    <None Include="opengl_vertex.glsl" />
     <None Include="VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>

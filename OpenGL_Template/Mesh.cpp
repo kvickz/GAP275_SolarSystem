@@ -30,13 +30,12 @@ void Mesh::CreateObject()
     m_indices = m_pObjFile->GetVertexIndices();
     m_vertNormals = m_pObjFile->GetVertexNormals();
     m_UVindices = m_pObjFile->GetUVIndices();
-
-    /*
+    
     //Vertex Normal Buffer
     glGenBuffers(1, &m_vertexNormalBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexNormalBufferObject);
     glBufferData(GL_ARRAY_BUFFER, m_vertNormals.size() * sizeof(float), &m_vertNormals[0], GL_DYNAMIC_DRAW);
-
+    /*
     //Texture Coordinate Buffer
     glGenBuffers(1, &m_UVBufferObject);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_UVBufferObject);
@@ -54,6 +53,9 @@ void Mesh::CreateObject()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferObject);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size(), &m_indices[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    //TEXTURE
+    //glGenTextures(1, g_)
 
     //VAO
     glGenVertexArrays(1, &m_vertexArrayObject);

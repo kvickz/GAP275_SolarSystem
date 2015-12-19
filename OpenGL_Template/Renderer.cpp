@@ -42,7 +42,7 @@ void Renderer::Init()
 
     //Setting clear color
 
-    glClearColor(0.08f, 0.08f, 0.08f, 1.0f);
+    glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
     //Enable depth buffer
     glEnable(GL_DEPTH_TEST);

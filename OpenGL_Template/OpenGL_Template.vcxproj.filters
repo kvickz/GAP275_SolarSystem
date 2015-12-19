@@ -167,6 +167,12 @@
     <None Include="LambertVertexShader.glsl">
       <Filter>Assets\Shaders</Filter>
     </None>
+    <None Include="opengl_fragment.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
+    <None Include="opengl_vertex.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

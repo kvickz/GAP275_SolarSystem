@@ -12,7 +12,7 @@ PointLightComponent::PointLightComponent(GameObject* pGameObject, TransformCompo
     , m_attenuation(0)
     , m_intensity(0)
 {
-    m_pTransform->SetPosition(0.f, -50.f, 0.f);
+    m_pTransform->SetPosition(0.f, 0.f, 0.f);
 }
 
 PointLightComponent::~PointLightComponent()

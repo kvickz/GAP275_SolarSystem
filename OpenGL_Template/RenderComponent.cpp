@@ -250,13 +250,13 @@ void RenderComponent::CreateProgram()
     glEnableVertexAttribArray(texAttrib);
     glBindBuffer(GL_ARRAY_BUFFER, GetUVBufferObject());
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    
+    */
+
     //NORMALS
     GLint normalAttrib = glGetAttribLocation(m_shaderProgram, "vertexNormal");
     glEnableVertexAttribArray(normalAttrib);
     glBindBuffer(GL_ARRAY_BUFFER, GetVertexNormalObject());
     glVertexAttribPointer(normalAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    */
     
     //POSITION
     GLint posAttrib = glGetAttribLocation(m_shaderProgram, "vertex");
@@ -264,11 +264,11 @@ void RenderComponent::CreateProgram()
     glBindBuffer(GL_ARRAY_BUFFER, GetVBO());
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    m_transformMatrixPair.second = glGetUniformLocation(m_shaderProgram, "transformMatrix");
-    m_viewMatrixUniform = glGetUniformLocation(m_shaderProgram, "viewMatrix");
-    m_projectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "projectionMatrix");
-    m_pointLightPositionUniform = glGetUniformLocation(m_shaderProgram, "lightPosition");
-    m_materialColorUniform = glGetUniformLocation(m_shaderProgram, "materialDiffuse");
+    m_transformMatrixPair.second =  glGetUniformLocation(m_shaderProgram, "transformMatrix");
+    m_viewMatrixUniform =           glGetUniformLocation(m_shaderProgram, "viewMatrix");
+    m_projectionMatrixUniform =     glGetUniformLocation(m_shaderProgram, "projectionMatrix");
+    m_pointLightPositionUniform =   glGetUniformLocation(m_shaderProgram, "lightPosition");
+    m_materialColorUniform =        glGetUniformLocation(m_shaderProgram, "materialDiffuse");
     m_materialAmbientColorUniform = glGetUniformLocation(m_shaderProgram, "materialAmbient");
     //m_transformViewProjectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformViewProjectionMatrix");
 
