@@ -13,6 +13,19 @@ Texture::Texture(std::string pFilePath)
     glGenTextures(1, &m_textureObject);
 
     m_fileName = pFilePath;
+
+    //Load The Image
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textureObject);
+
+    //Load Image
+    unsigned char* pImage;
+    pImage = SOIL_load_image(m_fileName.c_str(), &m_width, &m_height, 0, SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, pImage);
+    SOIL_free_image_data(pImage);
+
+    //Unbind
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture()
@@ -24,12 +37,6 @@ void Texture::InitTexture(GLuint shaderProgram)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_textureObject);
-
-    //Load Image
-    unsigned char* pImage;
-    pImage = SOIL_load_image(m_fileName.c_str(), &m_width, &m_height, 0, SOIL_LOAD_RGB);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, pImage);
-    SOIL_free_image_data(pImage);
 
     //Get uniform
     m_textureUniform = glGetUniformLocation(shaderProgram, "objectTexture");

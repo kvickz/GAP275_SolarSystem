@@ -24,6 +24,7 @@ private:
     TextureContainer m_textures;
 
     std::vector<Material*> m_materialInstances;
+    std::vector<Texture*> m_textureInstances;
 
 public:
     AssetManager();
@@ -40,9 +41,12 @@ public:
 
     Material* CreateMaterialInstance(std::string pMaterialName);
     Material* CreateMaterialInstance(std::string pMaterialName, Color newColor);
+    Material* CreateMaterialInstance(std::string pMaterialName, Color newColor, Texture* pTexture);
+    Material* CreateMaterialInstance(std::string pMaterialName, Texture* pTexture);
 
     // Textures //
-    Texture* LoadTexture(const std::string pFileName);
+    Texture* LoadTexture(std::string pTextureName, std::string pFileName);
+    Texture* CreateTextureInstance(std::string pTextureName);
 
 private:
     Material* LoadMaterialInternal(std::string pMaterialName, std::string pVertFile, std::string pFragFile, Color color, Color ambientColor);

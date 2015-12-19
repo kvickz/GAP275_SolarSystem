@@ -42,7 +42,7 @@ Material::Material(std::string pVertexFilePath, std::string pFragmentFilePath, C
 //-------------------------------------------------------------------------------------- -
 Material::~Material()
 {
-    SAFE_DELETE(m_pTexture);
+    //
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -127,6 +127,11 @@ void Material::SetAmbientColor(Color color)
 //-------------------------------------------------------------------------------------- -
 
 #include "Texture.h"
+
+void Material::SetTexture(Texture* pTexture)
+{
+    m_pTexture = pTexture;
+}
 
 void Material::LoadTexture(std::string fileName, GLuint shaderProgram)
 {

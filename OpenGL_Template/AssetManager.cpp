@@ -5,6 +5,7 @@
 #include "FileLoader.h"
 #include "Mesh.h"
 #include "Material.h"
+#include "Texture.h"
 
 //-------------------------------------------------------------------------------------- -
 //  Constructor
@@ -19,6 +20,8 @@ AssetManager::AssetManager()
 //-------------------------------------------------------------------------------------- -
 AssetManager::~AssetManager()
 {
+    //TODO: Make generic Resource class
+
     //Delete all the objects in meshes
     auto iteratorMesh = m_meshes.begin();
     while (iteratorMesh != m_meshes.end())
@@ -42,11 +45,27 @@ AssetManager::~AssetManager()
         delete (*iteratorMatInst);
         ++iteratorMatInst;
     }
+
+    //Deleting textures
+    auto iteratorTex = m_textures.begin();
+    while (iteratorTex != m_textures.end())
+    {
+        delete iteratorTex->second;
+        ++iteratorTex;
+    }
+
+    //Deleting material instances
+    auto iteratorTexInst = m_textureInstances.begin();
+    while (iteratorTexInst != m_textureInstances.end())
+    {
+        delete (*iteratorTexInst);
+        ++iteratorTexInst;
+    }
 }
 
-//--------------------------------------------------------------------------------------- -
+//***************************************************************************************
 //  Mesh Functions
-//--------------------------------------------------------------------------------------- -
+//***************************************************************************************
 Mesh* AssetManager::LoadMesh(const char* const pFileName)
 {
     //Search if the mesh already exists
@@ -65,9 +84,9 @@ Mesh* AssetManager::GetMesh(const char* const pFileName)
     return m_meshes[pFileName];
 }
 
-//--------------------------------------------------------------------------------------- -
+//***************************************************************************************
 //  Material Functions
-//--------------------------------------------------------------------------------------- -
+//***************************************************************************************
 Material* AssetManager::LoadMaterial(std::string pMaterialName, std::string pVertFile, std::string pFragFile, Color color)
 {
     return LoadMaterialInternal(pMaterialName, pVertFile, pFragFile, color, Color(0, 0, 0));
@@ -124,9 +143,56 @@ Material* AssetManager::CreateMaterialInstance(std::string pMaterialName, Color 
     return pNewMaterialInstance;
 }
 
-Texture* AssetManager::LoadTexture(const std::string pFileName)
+Material* AssetManager::CreateMaterialInstance(std::string pMaterialName, Color newColor, Texture* pTexture)
 {
+    //Create a copy of the template
+    Material* pNewMaterialInstance = new Material(*(m_materials[pMaterialName]));
+    pNewMaterialInstance->SetColor(newColor);
+    pNewMaterialInstance->SetTexture(pTexture);
 
+    m_materialInstances.push_back(pNewMaterialInstance);
 
-    return nullptr;
+    return pNewMaterialInstance;
+}
+
+Material* AssetManager::CreateMaterialInstance(std::string pMaterialName, Texture* pTexture)
+{
+    //Create a copy of the template
+    Material* pNewMaterialInstance = new Material(*(m_materials[pMaterialName]));
+    pNewMaterialInstance->SetColor(Color(0.8f, 0.8f, 0.8f));
+    pNewMaterialInstance->SetTexture(pTexture);
+
+    m_materialInstances.push_back(pNewMaterialInstance);
+
+    return pNewMaterialInstance;
+}
+
+//***************************************************************************************
+//  Texture Functions
+//***************************************************************************************
+Texture* AssetManager::LoadTexture(std::string pTextureName, std::string pFileName)
+{
+    //Search if the material already exists
+    auto findIt = m_textures.find(pTextureName);
+    if (findIt != m_textures.end())
+        return m_textures[pTextureName];
+
+    Texture* pNewTexture = new Texture(pFileName);
+    m_textures.emplace(pTextureName, pNewTexture);
+
+    return pNewTexture;
+}
+
+Texture* AssetManager::CreateTextureInstance(std::string pTextureName)
+{
+    auto findIt = m_textures.find(pTextureName);
+    if (findIt == m_textures.end())
+        return nullptr; //Not found
+
+    //Create a copy of the template
+    Texture* pNewMaterialInstance = new Texture(*(m_textures[pTextureName]));
+
+    m_textureInstances.push_back(pNewMaterialInstance);
+
+    return pNewMaterialInstance;
 }

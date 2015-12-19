@@ -253,8 +253,6 @@ void RenderComponent::CreateProgram()
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     */
 
-    
-
     //NORMALS
     GLint normalAttrib = glGetAttribLocation(m_shaderProgram, "vertexNormal");
     glEnableVertexAttribArray(normalAttrib);

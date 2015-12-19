@@ -86,24 +86,28 @@ struct SuperThing{
 
 #include "PointLightComponent.h"
 #include "GameObjectComponentFactory.h"
+#include "Texture.h"
 
 void Game::CreateGameObjects()
 {
     GameObjectFactory factory(m_pRenderer, m_pTime);
     
+    //  Load Meshes //
     Mesh* pSphereMesh = m_pAssetManager->LoadMesh("sphere.obj");
-    //TODO: Figure out why this makes everything else stop drawing
     Mesh* pRingMesh = m_pAssetManager->LoadMesh("ring.obj");
-    
-    //Mesh* pSphereMesh = m_pAssetManager->LoadMesh("TurtleTris.obj");
-    //Material* pMaterial = m_pAssetManager->LoadMaterial("DefaultMaterial", "VertexShader.glsl", "FragmentShader.glsl");
 
+    //  Create Default Color //
     Color defaultColor(0.8f, 0.8f, 0.8f);
     Color defaultAmbientColor(0.1f, 0.1f, 0.1f);
+
+    //  Load Texture  //
+    m_pAssetManager->LoadTexture("DefaultTexture", "earth.jpg");
+    Texture* pTextureDefault = m_pAssetManager->CreateTextureInstance("DefaultTexture");
+
+    //  Load Materials //
     m_pAssetManager->LoadMaterial("DefaultMaterial", "LambertVertexShader.glsl", "LambertFragmentShader.glsl", defaultColor, defaultAmbientColor);
     
     Material* pMaterial = m_pAssetManager->CreateMaterialInstance("DefaultMaterial");
-
     Material* pMaterialSun = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.9f, 0.5f));
     Material* pMaterialMercury = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(1.0f, 0.3f, 0.0f));
     Material* pMaterialVenus = m_pAssetManager->CreateMaterialInstance("DefaultMaterial", Color(0.7f, 0.9f, 0.f));
@@ -119,9 +123,7 @@ void Game::CreateGameObjects()
     const int k_numOfPlanets = 9;
     GameObject* pOrbitPositionObject[k_numOfPlanets];
     for (int i = 0; i < k_numOfPlanets; ++i)
-    {
         pOrbitPositionObject[i] = CreateEmptyObject();
-    }
 
     //Parameters = (PIVOT, PARENT, SCALE, ROTATION SPEED, MESH, MATERIAL)
     //OBJ1  - The Sun
