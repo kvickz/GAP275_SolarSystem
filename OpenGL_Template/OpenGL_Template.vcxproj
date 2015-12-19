@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="BoostCommand.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CameraMoveCommand.cpp" />
     <ClCompile Include="CameraRotateCommand.cpp" />
@@ -118,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="BoostCommand.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraRotateCommand.h" />
     <ClInclude Include="Color.h" />

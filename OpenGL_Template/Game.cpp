@@ -131,7 +131,7 @@ void Game::CreateGameObjects()
 
     //Parameters = (PIVOT, PARENT, SCALE, ROTATION SPEED, MESH, MATERIAL)
     //OBJ1  - The Sun
-    GameObject* pSun = CreatePlanet(Vector3(0, 0, 0), nullptr, 0.10f, 0.002f, pSphereMesh, pMaterialSun);
+    GameObject* pSun = CreatePlanet(Vector3(0, 0, 0), nullptr, 0.15f, 0.002f, pSphereMesh, pMaterialSun);
     //OBJ2  - Mercury
     GameObject* pMercury = CreatePlanet(Vector3(0, 0, 3.87f), pOrbitPositionObject[0], 0.00382f, 0.0016f, pSphereMesh, pMaterialMercury);
 	//OBJ3  - Venus
@@ -151,7 +151,7 @@ void Game::CreateGameObjects()
     //OBJ10  - Pluto
     GameObject* pPluto = CreatePlanet(Vector3(0, 0, 395.2f), pOrbitPositionObject[8], 0.00166f, 0.000159f, pSphereMesh, pMaterialPluto);
     //OBJ11 - Earth's moon
-    GameObject* pMoon = CreatePlanet(Vector3(0, 0, 1), pEarth, 0.0027f, 0.00343f, pSphereMesh, pMaterialPluto);
+    GameObject* pMoon = CreatePlanet(Vector3(0, 0, 4), pEarth, 0.0027f, 0.00343f, pSphereMesh, pMaterialPluto);
     //OBJ12  - Saturn's Ring
     GameObject* pSaturnRing = CreatePlanet(Vector3(0, 0, 0), pSaturn, 0.17f, 0.0323f, pRingMesh, pMaterialSaturn);
 
@@ -166,7 +166,11 @@ void Game::CreateGameObjects()
     m_pCamera = factory.CreateCamera(this);
     m_pInputManager->AddPlayer(0, m_pCamera);
     m_gameObjects.push_back(m_pCamera);
-    m_pCamera->GetTransformComponent()->SetPosition(0, 0, 0);
+    //m_pCamera->GetTransformComponent()->SetPosition(0, 0, 0);
+    m_pCamera->GetTransformComponent()->SetPosition(1.2f, 0.7f, -3.3f);
+    m_pCamera->GetComponent<CameraComponent>(k_cameraComponentID)->Yaw(290.0019f);
+    m_pCamera->GetComponent<CameraComponent>(k_cameraComponentID)->Pitch(-0.00005f);
+    //m_pCamera->GetTransformComponent()->SetEulerRotation(0, 180, 0);
 
     // Object Initialization
     //INIT ALL GAME OBJECTS

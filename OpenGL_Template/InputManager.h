@@ -18,6 +18,7 @@ private:
     {
         Command* axis_XYZ;
         Command* axis_XYZ_rotation;
+        //Command* m_leftShift;
 
         ~KeyboardCommands();
     };

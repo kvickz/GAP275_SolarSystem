@@ -39,7 +39,6 @@ class RenderComponent : public GameObjectComponent
     GLint m_viewMatrixUniform;
     GLint m_projectionMatrixUniform;
     GLint m_pointLightPositionUniform;
-    GLint m_materialColorUniform;
     GLint m_materialAmbientColorUniform;
 
     GLuint m_shaderProgram;

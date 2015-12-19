@@ -122,13 +122,14 @@ void RenderComponent::Draw()
     glProgramUniform3f(m_shaderProgram, m_pointLightPositionUniform, pointLightPosition.x, pointLightPosition.y, pointLightPosition.z);
     
     //COLOR
-    glUniform3f(m_materialColorUniform, m_pMaterialColor->r, m_pMaterialColor->g, m_pMaterialColor->b);
-    glUniform3f(m_materialAmbientColorUniform, m_pMaterialAmbientColor->r, m_pMaterialAmbientColor->g, m_pMaterialAmbientColor->b);
+    glUniform3f(m_pMaterial->GetColorUniform(), m_pMaterialColor->r, m_pMaterialColor->g, m_pMaterialColor->b);
+    //glUniform3f(m_materialAmbientColorUniform, m_pMaterialAmbientColor->r, m_pMaterialAmbientColor->g, m_pMaterialAmbientColor->b);
+    glUniform3f(m_pMaterial->GetAmbientColorUniform(), m_pMaterialAmbientColor->r, m_pMaterialAmbientColor->g, m_pMaterialAmbientColor->b);
 
     //TEXTURE
     glBindTexture(GL_TEXTURE_2D, m_pMaterial->GetTextureBufferObject());
     /*
-    //TODO: Get Light position in world space
+    //TODO: Get Light position in world space?
     GLint aLoc = glGetUniformLocation(m_shaderProgram, "lightPosition");
     glBindAttribLocation(m_shaderProgram, 0, "lightPosition");
     glUniform3f(m_shaderProgram, 0, 0, 0);
@@ -200,14 +201,11 @@ void RenderComponent::LoadMaterial(Material* const pMaterial)
 void RenderComponent::SetColor(Color color)
 {
     m_pMaterial->SetColor(color);
-    glUniform3f(m_materialColorUniform, color.r, color.g, color.b);
 }
 
 void RenderComponent::SetColor(float r, float g, float b)
 {
-    Color color(r, g, b);
-    m_pMaterial->SetColor(color);
-    glUniform3f(m_materialColorUniform, r, g, b);
+    m_pMaterial->SetColor(Color(r, g, b));
 }
 
 //-------------------------------------------------------------------------------------- -
@@ -217,14 +215,14 @@ void RenderComponent::SetColor(float r, float g, float b)
 void RenderComponent::SetAmbientColor(Color color)
 {
     m_pMaterial->SetAmbientColor(color);
-    glUniform3f(m_materialAmbientColorUniform, color.r, color.g, color.b);
+    //glUniform3f(m_materialAmbientColorUniform, color.r, color.g, color.b);
 }
 
 void RenderComponent::SetAmbientColor(float r, float g, float b)
 {
     Color color(r, g, b);
     m_pMaterial->SetAmbientColor(color);
-    glUniform3f(m_materialAmbientColorUniform, r, g, b);
+    //glUniform3f(m_materialAmbientColorUniform, r, g, b);
 }
 
 #include "Texture.h"
@@ -268,20 +266,21 @@ void RenderComponent::CreateProgram()
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     //TEXTURE
-    GLint textureAttrib = glGetAttribLocation(m_shaderProgram, "vertTextureCoordinate");
+    //GLint textureAttrib = glGetAttribLocation(m_shaderProgram, "vertTextureCoordinate");  //Kind of a neat effect :P
+    GLint textureAttrib = glGetAttribLocation(m_shaderProgram, "vertTextureCoordinate");  //Kind of a neat effect :P
     glEnableVertexAttribArray(textureAttrib);
     glVertexAttribPointer(textureAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     
-    //Create Texture
-    //m_pMaterial->LoadTexture("earth.jpg", m_shaderProgram);
+    //Init Texture
     m_pMaterial->InitTexture(m_shaderProgram);
 
     m_transformMatrixPair.second =  glGetUniformLocation(m_shaderProgram, "transformMatrix");
     m_viewMatrixUniform =           glGetUniformLocation(m_shaderProgram, "viewMatrix");
     m_projectionMatrixUniform =     glGetUniformLocation(m_shaderProgram, "projectionMatrix");
     m_pointLightPositionUniform =   glGetUniformLocation(m_shaderProgram, "lightPosition");
-    m_materialColorUniform =        glGetUniformLocation(m_shaderProgram, "materialDiffuse");
-    m_materialAmbientColorUniform = glGetUniformLocation(m_shaderProgram, "materialAmbient");
+    m_pMaterial->SetColorUniform(glGetUniformLocation(m_shaderProgram, "materialDiffuse"));
+    //m_materialAmbientColorUniform = glGetUniformLocation(m_shaderProgram, "materialAmbient");
+    m_pMaterial->SetAmbientColorUniform(glGetUniformLocation(m_shaderProgram, "materialAmbient"));
     //m_transformViewProjectionMatrixUniform = glGetUniformLocation(m_shaderProgram, "transformViewProjectionMatrix");
 
     glBindVertexArray(0);

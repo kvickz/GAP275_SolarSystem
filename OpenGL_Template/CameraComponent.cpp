@@ -18,6 +18,7 @@ CameraComponent::CameraComponent(const ComponentID id, GameObject* pGameObject, 
     , m_fieldOfView(70.f)
     , m_moveSpeed(0.01f)
     , m_rotationSpeed(8000.f)
+    , m_boosting(false)
 {
     m_viewMatrix.identity();
     m_projectionMatrix.identity();
@@ -54,44 +55,10 @@ void CameraComponent::Init()
 
 void CameraComponent::Update()
 {
+    m_boosting = false;
+
     //Get Delta time
     int deltaTime = m_pTime->GetDeltaTime();
-}
-
-//-------------------------------------------------------------------------------- -
-// Setting Movement Scale
-//-------------------------------------------------------------------------------- -
-void CameraComponent::SetMovementScaleX(float value)
-{
-    m_moveScale.x = value;
-}
-
-void CameraComponent::SetMovementScaleY(float value)
-{
-    m_moveScale.y = value;
-}
-
-void CameraComponent::SetMovementScaleZ(float value)
-{
-    m_moveScale.z = value;
-}
-
-//-------------------------------------------------------------------------------- -
-// Setting Rotation Scale
-//-------------------------------------------------------------------------------- -
-void CameraComponent::SetRotationScaleX(float value)
-{
-    m_rotationScale.x = value;
-}
-
-void CameraComponent::SetRotationScaleY(float value)
-{
-    m_rotationScale.y = value;
-}
-
-void CameraComponent::SetRotationScaleZ(float value)
-{
-    m_rotationScale.z = value;
 }
 
 //-------------------------------------------------------------------------------- -
@@ -115,7 +82,6 @@ void CameraComponent::Yaw(float degrees)
 
     //Getting right unit vector
     m_cameraRight.normalize();
-
 
     UpdateTransform();
 }
@@ -162,10 +128,19 @@ void CameraComponent::Roll(float degrees)
 void CameraComponent::MoveForward(float distance)
 {
     distance *= m_moveSpeed;
+
+    if (m_boosting)
+        distance *= 2;
+    /*
+    m_cameraForward *= distance;
+    float x = m_cameraForward[0];
+    float y = m_cameraForward[1];
+    float z = m_cameraForward[2];
+    */
     float x = m_cameraForward[0] * distance;
     float y = m_cameraForward[1] * distance;
     float z = m_cameraForward[2] * distance;
-
+    
     m_pTransformPosition->Add(x, y, z);
 
     UpdateTransform();
@@ -174,6 +149,10 @@ void CameraComponent::MoveForward(float distance)
 void CameraComponent::MoveRight(float distance)
 {
     distance *= m_moveSpeed;
+
+    if (m_boosting)
+        distance *= 2;
+
     float x = m_cameraRight[0] * distance;
     float y = m_cameraRight[1] * distance;
     float z = m_cameraRight[2] * distance;
@@ -186,6 +165,10 @@ void CameraComponent::MoveRight(float distance)
 void CameraComponent::MoveUp(float distance)
 {
     distance *= m_moveSpeed;
+
+    if (m_boosting)
+        distance *= 2;
+
     float x = m_cameraUp[0] * distance;
     float y = m_cameraUp[1] * distance;
     float z = m_cameraUp[2] * distance;
@@ -193,6 +176,11 @@ void CameraComponent::MoveUp(float distance)
     m_pTransformPosition->Add(x, y, z);
 
     UpdateTransform();
+}
+
+void CameraComponent::Boost()
+{
+    m_boosting = true;
 }
 
 void CameraComponent::UpdateTransform()

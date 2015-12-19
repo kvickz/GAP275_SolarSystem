@@ -48,6 +48,7 @@ InputManager::KeyboardCommands::~KeyboardCommands()
 {
     delete axis_XYZ;
     delete axis_XYZ_rotation;
+    //delete m_leftShift;
 }
 
 //-------------------------------------------------------------------------------------- -

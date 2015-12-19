@@ -76,6 +76,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Assets</Filter>
     </ClCompile>
+    <ClCompile Include="BoostCommand.cpp">
+      <Filter>CommandPattern</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -161,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="BoostCommand.h">
+      <Filter>CommandPattern</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

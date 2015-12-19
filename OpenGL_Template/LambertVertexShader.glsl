@@ -29,7 +29,8 @@ uniform vec3 cameraPosition;
 //-------------------------------------------------------------------------------------- -
 //	Main
 //-------------------------------------------------------------------------------------- -
-void main() {
+void main() 
+{
 	mat4 worldViewMatrix = viewMatrix * transformMatrix;
 	vec4 vertexPosition = worldViewMatrix * vec4(vertex, 1.0);
 	gl_Position = projectionMatrix * vertexPosition;
